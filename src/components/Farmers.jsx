@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Icon } from "@iconify/react";
 //import Loader from "./Loader";
-import { Link } from "react-router-dom";
 import moment from "moment";
 import {
   ConfigProvider,
@@ -20,9 +19,8 @@ import {
 } from "antd";
 
 import axios from "axios";
-import { set } from "mongoose";
 
-let index = 0;
+
 
 const { Search, TextArea } = Input;
 
@@ -43,7 +41,6 @@ function FarmersList() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [username, setUsername] = useState("");
   const [profileImage, setProfileImage] = useState("");
-  const [status, setStatus] = useState("");
 
 
   //Edit farmer model use states
@@ -168,7 +165,7 @@ function FarmersList() {
       title: "Id Number",
       dataIndex: "idnumber",
       key: "idnumber",
-      render: (text) => <a>{text}</a>,
+      
     },
     
     {
@@ -439,6 +436,7 @@ function FarmersList() {
 
   const conformSuspend = () => {
     setIsConformModalOpen(true);
+
   };
 
   const conformActive = () => {
@@ -481,15 +479,7 @@ function FarmersList() {
   const [filteredEmployeeList, setFilteredEmployeeList] = useState([]);
   const [searchKey, setSearchKey] = useState("");
 
-  const formatDareful = (date) => {
-    const createdAtDate = new Date(date);
-    const formattedDate = createdAtDate.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-    return formattedDate;
-  };
+  
 
   useEffect(() => {
     let tempList = employeeList;
@@ -521,6 +511,7 @@ function FarmersList() {
         onCancel={() => setIsVerifyModalOpen(false)}
         width={300}
         centered
+        maskStyle={{ backgroundColor: 'transparent' }}
       >
         <p>This can't be undone.</p>
       </Modal>
@@ -533,6 +524,7 @@ function FarmersList() {
         onCancel={() => setTableModelOpen(false)}
         footer={null}
         width={550}
+        maskStyle={{ backgroundColor: 'transparent' }}
       >
         <div className="p-2 mb-7">
           <div className="flex flex-row justify-center items-center gap-5">
@@ -566,6 +558,7 @@ function FarmersList() {
                   }}
                   src={previewImage}
                 />
+
               </Modal>
             </div>
           </div>
@@ -578,6 +571,7 @@ function FarmersList() {
                   size="large"
                   onChange={(e) => setEditFullName(e.target.value)}
                   value={editFullName}
+                  
                 />
               </div>
 
@@ -709,7 +703,7 @@ function FarmersList() {
                 <Radio.Button value="Suspended">Unverified</Radio.Button>
               </Radio.Group>
               <button
-                class=" flex flex-derectiom-col text-white font-medium text-sm bg-[#533c56] rounded-md py-2.5 px-4"
+                class=" flex flex-derectiom-col text-white font-medium text-sm bg-[green] rounded-md py-2.5 px-4"
                 onClick={() => setAddEmployeeModelOpen(true)}
               >
                 <svg
@@ -737,6 +731,7 @@ function FarmersList() {
             onCancel={() => setAddEmployeeModelOpen(false)}
             footer={null}
             width={550}
+
           >
             <div class="p-2 mb-7">
               <div class="flex flex-row justify-center items-center gap-5">
@@ -757,6 +752,7 @@ function FarmersList() {
                     title={"Preview: "}
                     footer={null}
                     onCancel={handleCancel}
+
                   >
                     <img
                       alt="example"
@@ -890,7 +886,7 @@ function FarmersList() {
                 Cancel
               </Button>
               <button
-                class="text-white font-medium text-sm bg-[#533c56] rounded-md py-2 px-3"
+                class="text-white font-medium text-sm bg-[green] rounded-md py-2 px-3"
                 onClick={saveFarmer}
                 style={{
                   width: "120px",
