@@ -25,7 +25,7 @@ const columns = [
             key={index}
             src={image}
             alt={`Crop ${index + 1}`}
-            style={{ width: '50px', height: '50px', marginRight: '10px' }}
+            style={{ width: '40px', height: '40px', marginRight: '10px' }}
           />
         ))}
       </div>
@@ -139,7 +139,7 @@ function CropData() {
             width: 200,
           }}
         />
-        <Button type="primary" icon={<DownloadOutlined />} size={size} className="relative left-[640px] bg-[#bfbfbf]" />
+        <Button type="primary" icon={<DownloadOutlined />} size={size} className="relative left-[625px] bg-[#bfbfbf]" />
         <Button type="primary" icon={<Icon icon="ic:baseline-plus" />} className="bg-[#0c6c41] ml-auto font-['Poppins']">
           Add New Crop
         </Button>
