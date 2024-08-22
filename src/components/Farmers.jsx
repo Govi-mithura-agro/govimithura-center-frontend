@@ -33,39 +33,24 @@ function FarmersList() {
   const [tableModelContent, setTableModelContent] = useState();
   const [isEmployeeLoading, setIsEmployeeLoading] = useState(false);
 
-  
 
-  // Type Selector
-  const [items, setItems] = useState([
-    "Photographer",
-    "Event Manager",
-    "Manager",
-    "Designer",
-  ]);
-  const [name, setName] = useState("");
-  const inputRef = useRef(null);
-  const onNameChange = (event) => {
-    setName(event.target.value);
-  };
- 
-
-  // Add employee model use states
+  // Add farmer model use states
   const [address, setAddress] = useState("");
   const [dob, setDob] = useState("");
-  const [type, setType] = useState("");
-  const [firstName, setFirstName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [username, setUsername] = useState("");
   const [profileImage, setProfileImage] = useState("");
+  const [status, setStatus] = useState("");
 
-  //Edit employee model use states
+
+  //Edit farmer model use states
   const [editAddress, setEditAddress] = useState("");
   const [editDob, setEditDob] = useState("");
-  const [editType, setEditType] = useState("sick leave");
-  const [editFirstName, setEditFirstName] = useState("");
-  const [editLastName, setEditLastName] = useState("");
+  const [editFullName, setEditFullName] = useState("");
+  const [editIdNumber, setEditIdNumber] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editPhoneNumber, setEditPhoneNumber] = useState("");
   const [editUsername, setEditUsername] = useState("");
@@ -111,69 +96,52 @@ function FarmersList() {
 
   const saveEditEmployee = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+  
     if (
       !editAddress ||
       !editDob ||
-      !editType ||
-      !editFirstName ||
-      !editLastName ||
+      !editFullName ||
+      !editIdNumber ||
       !editEmail ||
-      !editPhoneNumber ||
       !editPhoneNumber
     ) {
       return message.error("Please fill all the fields");
     } else if (!emailRegex.test(editEmail)) {
       return message.error("Please enter a valid email address");
     }
-
+  
     if (!editProfileImage || editProfileImage.trim() === "") {
-      // Set default profile image
-      setProfileImage(
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/1200px-Windows_10_Default_Profile_Picture.svg.png"
-      );
+      setProfileImage("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/1200px-Windows_10_Default_Profile_Picture.svg.png");
     } else {
       console.log("Profile image already set:", editProfileImage);
     }
-
-    const empData = {
+  
+    const farmerData = {
+      farmerID: tableModelContent.farmerID, // Ensure you send the correct ID field
       address: editAddress,
-      dob: editDob,
-      type: editType,
-      firstName: editFirstName,
-      lastName: editLastName,
-      email: editEmail,
+      dob: editDob, // Make sure dob is the correct type
+      fullname: editFullName,
+      idnumber: editIdNumber,
       phoneNumber: editPhoneNumber,
-      username: editUsername,
       profileImage: editProfileImage,
-      empID: tableModelContent.empID,
-      _id: tableModelContent._id,
+      email: editEmail,
     };
-
-    console.log(empData);
-
+  
+    console.log('Sending farmer data:', farmerData);
+  
     try {
-      await axios.post(
-        `${process.env.PUBLIC_URL}/api/employees/editEmployee`,
-        empData
-      );
-      await axios.post(`${process.env.PUBLIC_URL}/api/users/editUser`, {
-        userID: tableModelContent.userID,
-        username: editUsername,
-        profilePic: editProfileImage,
-        firstName: editFirstName,
-        lastName: editLastName,
-        email: editEmail,
-        phoneNumber: editPhoneNumber,
-        address1: editAddress,
-      });
-      message.success("Employee edit successfully");
+      const response = await axios.post("http://localhost:5000/api/farmers/editFarmer", farmerData);
+      console.log('Response:', response.data);
+      message.success("Farmer edited successfully");
       setTableModelOpen(false);
-      fetchEmployeeList();
+      fetchFarmersList();
     } catch (error) {
-      message.error(error.response.data.message);
+      console.error('Error:', error.response?.data?.message || error.message);
+      message.error(error.response?.data?.message || "An error occurred");
     }
   };
+  
+
 
   //Employee table
   const columns = [
@@ -187,30 +155,32 @@ function FarmersList() {
     },
     {
       title: "ID",
-      dataIndex: "empID",
-      key: "empID",
+      dataIndex: "farmerID",
+      key: "farmerID",
     },
     {
-      title: "First Name",
-      dataIndex: "firstName",
-      key: "firstName",
+      title: "Full Name",
+      dataIndex: "fullname",
+      key: "fullname",
       render: (text) => <a>{text}</a>,
     },
     {
-      title: "Last Name",
-      dataIndex: "lastName",
-      key: "lastName",
+      title: "Id Number",
+      dataIndex: "idnumber",
+      key: "idnumber",
       render: (text) => <a>{text}</a>,
     },
-    {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-    },
+    
     {
       title: "Address",
       dataIndex: "address",
       key: "address",
+    },
+
+    {
+      title : "phoneNumber",
+      dataIndex : "phoneNumber",
+      key : "phoneNumber"
     },
     {
       title: "Status",
@@ -218,7 +188,7 @@ function FarmersList() {
       dataIndex: "status",
       render: (status) => {
         let color = "green";
-        if (status === "Suspended") {
+        if (status === "Unverified") {
           color = "red";
         }
         return <Tag color={color}>{status.toUpperCase()}</Tag>;
@@ -229,7 +199,7 @@ function FarmersList() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          {record.status === "active" ? (
+          {record.status === "Verified" ? (
             <button
               style={{
                 fontSize: "20px",
@@ -264,9 +234,8 @@ function FarmersList() {
     setTableModelOpen(true);
     setEditAddress(record.address);
     setEditDob(record.dob);
-    setEditType(record.type);
-    setEditFirstName(record.firstName);
-    setEditLastName(record.lastName);
+    setEditFullName(record.fullname);
+    setEditIdNumber(record.idnumber);
     setEditEmail(record.email);
     setEditPhoneNumber(record.phoneNumber);
     setEditUsername(record.username);
@@ -281,26 +250,29 @@ function FarmersList() {
       },
     ]);
   };
-  async function fetchEmployeeList() {
-    const response = await axios.get(
-      `${process.env.PUBLIC_URL}/api/employees/getAllEmployees`
-    );
-    setEmployeeList(response.data);
-    setIsEmployeeLoading(false);
+  async function fetchFarmersList() {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/farmers/getAllFarmers"
+      );
+      setEmployeeList(response.data);
+      console.log(response.data.farmers);
+      setIsEmployeeLoading(false);
+    } catch (error) {
+      console.error("Error fetching farmers list:", error);
+      setIsEmployeeLoading(false); 
+    }
   }
-
   
 
-  
-
-  const saveEmployee = async () => {
+  const saveFarmer = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    // Validate required fields
     if (
       !address ||
       !dob ||
-      !type ||
-      !firstName ||
+      !fullName ||
       !idNumber ||
       !email ||
       !phoneNumber ||
@@ -311,8 +283,8 @@ function FarmersList() {
       return message.error("Please enter a valid email address");
     }
 
+    // Set default profile image if none is provided
     if (!profileImage || profileImage.trim() === "") {
-      // Set default profile image
       setProfileImage(
         "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/1200px-Windows_10_Default_Profile_Picture.svg.png"
       );
@@ -320,49 +292,31 @@ function FarmersList() {
       console.log("Profile image already set:", profileImage);
     }
 
-    const userData = {
-      firstName,
-      idNumber,
+    // Prepare the data to be sent
+    const farmerData = {
+      profileImage: profileImage,  // Ensure this field is named correctly
+      idnumber: idNumber,           // Ensure this field is named correctly
+      fullname: fullName,           // Ensure this field is named correctly
       email,
       phoneNumber,
       username,
-      profilePic: profileImage,
-      userType: "Employee",
-      status: "Active",
-      address1: address,
+      address,
+      dob,
+      status: "Unverified",
     };
 
     try {
-      const response = await axios.post(
-        `${process.env.PUBLIC_URL}/api/users/addUser`,
-        userData
-      );
+      // Send a POST request to add a new farmer
+      await axios.post("http://localhost:5000/api/farmers/addFarmer", farmerData);
 
-      const empData = {
-        address,
-        dob,
-        type,
-        firstName,
-        idNumber,
-        email,
-        phoneNumber,
-        username,
-        profileImage,
-        userID: response.data.userID,
-      };
-
-      const res = await axios.post(
-        `${process.env.PUBLIC_URL}/api/employees/addEmployee`,
-        empData
-      );
-      message.success("Employee added successfully");
+      message.success("Farmer added successfully");
       setAddEmployeeModelOpen(false);
-      fetchEmployeeList();
+      fetchFarmersList();
+
       // Reset form fields
       setAddress("");
       setDob(null);
-      setType("");
-      setFirstName("");
+      setFullName("");
       setIdNumber("");
       setEmail("");
       setPhoneNumber("");
@@ -370,9 +324,12 @@ function FarmersList() {
       setProfileImage("");
       setFileList([]);
     } catch (error) {
-      message.error(error.response.data.message);
+      const errorMessage = error.response?.data?.message || "An error occurred while adding the farmer";
+      message.error(errorMessage);
     }
   };
+
+
 
   // Image upload
   const [loading, setLoading] = useState(false);
@@ -468,8 +425,6 @@ function FarmersList() {
       });
   };
 
-  
-
   // Table Functions
   const [employeeList, setEmployeeList] = useState([]);
   const [pagination, setPagination] = useState({
@@ -487,32 +442,39 @@ function FarmersList() {
   };
 
   const conformActive = () => {
-    setIsActiveModalOpen(true);
+    setIsVerifyModalOpen(true);
   };
 
   const [isConformModalOpen, setIsConformModalOpen] = useState(false);
-  const [isActiveModalOpen, setIsActiveModalOpen] = useState(false);
+  const [IsVerifyModalOpen, setIsVerifyModalOpen] = useState(false);
 
-  const activeUser = async () => {
+  const verifyFarmer = async () => {
     try {
+      // Verify the farmer by sending a POST request to the server
       await axios.post(
-        `${process.env.PUBLIC_URL}/api/employees/activeEmployee`,
-        { empID: tableModelContent.empID }
+        "http://localhost:5000/api/farmers/verifyFarmer",
+        { farmerID: tableModelContent.farmerID }
       );
-      await axios.post(`${process.env.PUBLIC_URL}/api/users/activeUser`, {
-        userID: tableModelContent.userID,
-      });
-      message.success("Employee activated successfully");
+      
+      // Display a success message
+      message.success("Farmer verified successfully");
+  
+      // Close any open modals or dialogs
       setTableModelOpen(false);
-      setIsActiveModalOpen(false);
-      fetchEmployeeList();
+      setIsVerifyModalOpen(false);
+  
+      // Fetch the updated list of farmers
+      fetchFarmersList();
     } catch (error) {
+      // Log any errors that occur during the process
       console.log(error);
+      message.error("Failed to verify farmer");
     }
   };
+  
 
   useEffect(() => {
-    fetchEmployeeList();
+    fetchFarmersList();
   }, []);
 
   //Filter employee list
@@ -553,10 +515,10 @@ function FarmersList() {
       {/* Active conformation model */}
       <Modal
         title="Are You Sure?"
-        open={isActiveModalOpen}
-        onOk={activeUser}
+        open={IsVerifyModalOpen}
+        onOk={verifyFarmer}
         okText="Active"
-        onCancel={() => setIsActiveModalOpen(false)}
+        onCancel={() => setIsVerifyModalOpen(false)}
         width={300}
         centered
       >
@@ -573,7 +535,7 @@ function FarmersList() {
         width={550}
       >
         <div className="p-2 mb-7">
-          <div className="flex flex-row justify-start items-center gap-5">
+          <div className="flex flex-row justify-center items-center gap-5">
             <div className="w-24 mr-7">
               <Upload
                 customRequest={customRequestEdit}
@@ -606,25 +568,16 @@ function FarmersList() {
                 />
               </Modal>
             </div>
-            <div className="flex flex-col mt-2.5">
-              <span className="mb-1 text-xs">Email</span>
-              <Input
-                type="email"
-                size="large"
-                onChange={(e) => setEditEmail(e.target.value)}
-                value={editEmail}
-              />
-            </div>
           </div>
 
-          <div className="flex flex-row justify-center items-center rounded-lg border border-black/15 p-5 pt-2.5 gap-5 my-4.5 mb-5">
+          <div className="flex flex-row justify-center items-center rounded-lg border border-black/15 p-5 pt-2.5 gap-5 my-4.5 mt-5 mb-5">
             <div className="add_employee_popup_details_container_left">
               <div className="mt-2 flex flex-col">
-                <span className="mb-1 text-xs">Name</span>
+                <span className="mb-1 text-xs">Full Name</span>
                 <Input
                   size="large"
-                  onChange={(e) => setEditFirstName(e.target.value)}
-                  value={editFirstName}
+                  onChange={(e) => setEditFullName(e.target.value)}
+                  value={editFullName}
                 />
               </div>
 
@@ -650,11 +603,11 @@ function FarmersList() {
 
             <div className="add_employee_popup_details_container_left space-y-2.5">
               <div className="flex flex-col mt-2.5">
-                <span className="mb-1 text-xs">Last Name</span>
+                <span className="mb-1 text-xs">ID Number</span>
                 <Input
                   size="large"
-                  onChange={(e) => setEditLastName(e.target.value)}
-                  value={editLastName}
+                  onChange={(e) => setEditIdNumber(e.target.value)}
+                  value={editIdNumber}
                 />
               </div>
 
@@ -704,10 +657,10 @@ function FarmersList() {
               </button>
             )}
           </div>
-          <div className="mt-4 flex flex-col gap-1.5 justify-start items-start rounded-lg border border-gray-300 px-5 py-4">
+          <div className="mt-4 flex flex-raw gap-1.5 justify-center gap-[50px] items-start rounded-lg border border-gray-300 px-5 py-4">
             <button
               onClick={() => setTableModelOpen(false)}
-              className="w-[120px] h-[40px] bg-red-600 text-white rounded-md"
+              className="w-[120px] h-[40px] bg-green-600 text-white rounded-md"
             >
               Cancel
             </button>
@@ -835,8 +788,8 @@ function FarmersList() {
                     </span>
                     <Input
                       size="large"
-                      onChange={(e) => setFirstName(e.target.value)}
-                      value={firstName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      value={fullName}
                     />
                   </div>
                   <div
@@ -938,7 +891,7 @@ function FarmersList() {
               </Button>
               <button
                 class="text-white font-medium text-sm bg-[#533c56] rounded-md py-2 px-3"
-                onClick={saveEmployee}
+                onClick={saveFarmer}
                 style={{
                   width: "120px",
                   height: "40px",
