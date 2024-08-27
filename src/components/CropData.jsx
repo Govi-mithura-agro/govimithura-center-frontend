@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { AudioOutlined, DownloadOutlined } from '@ant-design/icons';
-import { Input, Button, Space, Table, Modal } from 'antd';
+import { DownloadOutlined } from '@ant-design/icons';
+import { Input, Button, Space, Table, Modal, Col, DatePicker, Drawer, Form, Row, Select, Checkbox } from 'antd';
 import { Icon } from "@iconify/react";
 import '../styles/CropData.css';
 import axios from "axios";
 
 const { Search } = Input;
+const { Option } = Select;
+const onChange = (checkedValues) => {
+  console.log('checked = ', checkedValues);
+};
 
 function CropData() {
 
-  const [open, setOpen] = useState(false);
+  const [openCropDetails, setOpenCropDetials] = useState(false);
+  const [openAddCrop, setOpenAddCrop] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState(null); // State to hold the selected crop's data
 
@@ -18,20 +23,28 @@ function CropData() {
 
   const showModal = (crop) => {
     setSelectedCrop(crop); // Set the selected crop's data
-    setOpen(true);
+    setOpenCropDetials(true);
   };
 
   const handleOk = () => {
     setConfirmLoading(true);
     setTimeout(() => {
-      setOpen(false);
+      setOpenCropDetials(false);
       setConfirmLoading(false);
     }, 2000);
   };
 
   const handleCancel = () => {
     console.log('Clicked cancel button');
-    setOpen(false);
+    setOpenCropDetials(false);
+  };
+
+  const showDrawer = () => {
+    setOpenAddCrop(true);
+  };
+
+  const onClose = () => {
+    setOpenAddCrop(false);
   };
 
   const columns = [
@@ -156,14 +169,240 @@ function CropData() {
           }}
         />
         <Button type="primary" icon={<DownloadOutlined />} size={size} className="relative left-[625px] bg-[#bfbfbf]" />
-        <Button type="primary" icon={<Icon icon="ic:baseline-plus" />} className="bg-[#0c6c41] ml-auto font-['Poppins']">
+        <Button type="primary" icon={<Icon icon="ic:baseline-plus" />} className="bg-[#0c6c41] ml-auto font-['Poppins']" onClick={showDrawer}>
           Add New Crop
         </Button>
+        <Drawer
+          title="Add New Crop"
+          width={720}
+          onClose={onClose}
+          open={openAddCrop}
+          styles={{
+            body: {
+              paddingBottom: 80,
+            },
+          }}
+          extra={
+            <Space>
+              <Button onClick={onClose}>Cancel</Button>
+              <Button onClick={onClose} type="primary" className='bg-[#0c6c41]'>
+                Submit
+              </Button>
+            </Space>
+          }
+        >
+          <Form layout="vertical" hideRequiredMark>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="cropimage"
+                  label="Crop Image Url"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter crop image url',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Enter crop image url" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="cropname"
+                  label="Crop Name"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter crop name',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Enter crop name" />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="scientificname"
+                  label="Scientific Name"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter scientific name',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Enter scientific name" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="plantingseason"
+                  label="Planting Season"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please choose the planting season',
+                    },
+                  ]}
+                >
+                  <Select placeholder="Choose the planting season">
+                    <Option value="Maha">Maha</Option>
+                    <Option value="Yala">Yala</Option>
+                    <Option value="Maha/Yala">Maha/Yala</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="soiltype"
+                  label="Soil Type"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please choose the soil type',
+                    },
+                  ]}
+                >
+                  <Select placeholder="Choose the soil type">
+                    <Option value="Alluvial">Alluvial</Option>
+                    <Option value="Red Loam">Red Loam</Option>
+                    <Option value="Sandy Loam">Sandy Loam</Option>
+                    <Option value="Laterite">Laterite</Option>
+                    <Option value="Clay Loam">Clay Loam</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="growthduration"
+                  label="Growth Duration (days)"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter growth duration',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Enter growth duration" />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="averageyield"
+                  label="Average Yield (tons/ha)"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter average yield',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Enter average yield" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="waterrequirements"
+                  label="Water Requirements"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please choose the water requirements',
+                    },
+                  ]}
+                >
+                  <Select placeholder="Choose the water requirements">
+                    <Option value="High">High</Option>
+                    <Option value="Medium">Medium</Option>
+                    <Option value="Low">Low</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item
+                  name="region"
+                  label="Region"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'please enter region',
+                    },
+                  ]}
+                >
+                  <Checkbox.Group
+                    style={{
+                      width: '100%',
+                    }}
+                    onChange={onChange}
+                  >
+                    <Row>
+                      <Col span={8}>
+                        <Checkbox value="Western">Western</Checkbox>
+                      </Col>
+                      <Col span={8}>
+                        <Checkbox value="Central">Central</Checkbox>
+                      </Col>
+                      <Col span={8}>
+                        <Checkbox value="Southern">Southern</Checkbox>
+                      </Col>
+                      <Col span={8}>
+                        <Checkbox value="Northern">Northern</Checkbox>
+                      </Col>
+                      <Col span={8}>
+                        <Checkbox value="Eastern">Eastern</Checkbox>
+                      </Col>
+                      <Col span={8}>
+                        <Checkbox value="North Western">North Western</Checkbox>
+                      </Col>
+                      <Col span={8}>
+                        <Checkbox value="North Central">North Central</Checkbox>
+                      </Col>
+                      <Col span={8}>
+                        <Checkbox value="Uva">Uva</Checkbox>
+                      </Col>
+                      <Col span={8}>
+                        <Checkbox value="Sabaragamuwa">Sabaragamuwa</Checkbox>
+                      </Col>
+                    </Row>
+                  </Checkbox.Group>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item
+                  name="description"
+                  label="Description"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'please enter description',
+                    },
+                  ]}
+                >
+                  <Input.TextArea rows={4} placeholder="Enter description" />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Drawer>
       </div>
       <Table columns={columns} dataSource={crops} className='m-[7px] px-[7px]' />
       <Modal
         title="Crop Details"
-        open={open}
+        open={openCropDetails}
         onOk={handleOk}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
