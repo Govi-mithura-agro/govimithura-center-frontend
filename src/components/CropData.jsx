@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
-import { Input, Button, Space, Table, Modal, Col, Drawer, Form, Row, Select, Checkbox } from 'antd';
+import { Input, Button, Space, Table, Modal, Col, Drawer, Form, Row, Select, Checkbox, message } from 'antd';
 import { Icon } from "@iconify/react";
 import '../styles/CropData.css';
 import axios from "axios";
@@ -27,6 +27,20 @@ function CropData() {
   const [region, setRegion] = useState([]);
   const [description, setDescription] = useState('');
 
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const addSuccess = () => {
+    messageApi.success('Crop added successfully!');
+  };
+
+  const addError = () => {
+    messageApi.error('Failed to add crop. Please try again.');
+  };
+
+  const addWarning = (warningMessage) => {
+    messageApi.warning(warningMessage);
+  };
+
   const onChangeRegion = (checkedValues) => {
     setRegion(checkedValues);
   };
@@ -34,14 +48,29 @@ function CropData() {
   async function addNewCrop(e) {
     e.preventDefault();
 
+    if (crop === '' || cropName === '' || scientificName === '' || plantingSeason === '' || soilType === '' || growthDuration === '' ||
+      averageYield === '' || waterRequirements === '' || region.length === 0 || description === '') {
+      addWarning('Please fill in all required fields.');
+      return;
+    }
+    // Validation for numeric fields
+    if (isNaN(growthDuration) || growthDuration === '') {
+      addWarning('Please enter a valid number for Growth Duration.');
+      return;
+    }
+    if (isNaN(averageYield) || averageYield === '') {
+      addWarning('Please enter a valid number for Average Yield.');
+      return;
+    }
+
     const newCrop = {
       crop: [crop],  // Ensure crop is sent as an array
       cropName: cropName,
       scientificName: scientificName,
       plantingSeason: plantingSeason,
       soilType: soilType,
-      growthDuration: growthDuration,
-      averageYield: averageYield,
+      growthDuration: parseFloat(growthDuration), // Convert to number
+      averageYield: parseFloat(averageYield), // Convert to number
       waterRequirements: waterRequirements,
       region: region,
       description: description,
@@ -50,7 +79,7 @@ function CropData() {
     try {
       const response = await axios.post('http://localhost:5000/api/crops/addcropdata', newCrop);
       console.log(response.data);
-
+      addSuccess();
       setOpenAddCrop(false);
       setCrop('');
       setCropName('');
@@ -67,6 +96,7 @@ function CropData() {
 
     } catch (error) {
       console.log(error);
+      addError();
     }
   }
 
@@ -199,6 +229,7 @@ function CropData() {
 
   return (
     <>
+      {contextHolder}
       <div className="flex justify-start gap-[25px] items-center h-[74px] bg-white rounded-[11px] m-[15px] px-[15px]">
         <div className="w-[121px] h-[29px] text-slate-900 text-xl font-semibold font-['Poppins']">Crop Data</div>
         <Search
