@@ -1,25 +1,74 @@
 import React, { useEffect, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
-import { Input, Button, Space, Table, Modal, Col, DatePicker, Drawer, Form, Row, Select, Checkbox } from 'antd';
+import { Input, Button, Space, Table, Modal, Col, Drawer, Form, Row, Select, Checkbox } from 'antd';
 import { Icon } from "@iconify/react";
 import '../styles/CropData.css';
 import axios from "axios";
 
 const { Search } = Input;
 const { Option } = Select;
-const onChange = (checkedValues) => {
-  console.log('checked = ', checkedValues);
-};
 
 function CropData() {
-
   const [openCropDetails, setOpenCropDetials] = useState(false);
   const [openAddCrop, setOpenAddCrop] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState(null); // State to hold the selected crop's data
-
   const [size, setSize] = useState('medium');
   const [crops, setCrops] = useState([]);
+
+  const [crop, setCrop] = useState('');
+  const [cropName, setCropName] = useState('');
+  const [scientificName, setScientificName] = useState('');
+  const [plantingSeason, setPlantingSeason] = useState('');
+  const [soilType, setSoilType] = useState('');
+  const [growthDuration, setGrowthDuration] = useState('');
+  const [averageYield, setAverageYield] = useState('');
+  const [waterRequirements, setWaterRequirements] = useState('');
+  const [region, setRegion] = useState([]);
+  const [description, setDescription] = useState('');
+
+  const onChangeRegion = (checkedValues) => {
+    setRegion(checkedValues);
+  };
+
+  async function addNewCrop(e) {
+    e.preventDefault();
+
+    const newCrop = {
+      crop: [crop],  // Ensure crop is sent as an array
+      cropName: cropName,
+      scientificName: scientificName,
+      plantingSeason: plantingSeason,
+      soilType: soilType,
+      growthDuration: growthDuration,
+      averageYield: averageYield,
+      waterRequirements: waterRequirements,
+      region: region,
+      description: description,
+    };
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/crops/addcropdata', newCrop);
+      console.log(response.data);
+
+      setOpenAddCrop(false);
+      setCrop('');
+      setCropName('');
+      setScientificName('');
+      setPlantingSeason('');
+      setSoilType('');
+      setGrowthDuration('');
+      setAverageYield('');
+      setWaterRequirements('');
+      setRegion([]);
+      setDescription('');
+
+      // Reload the crops data after adding a new crop
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const showModal = (crop) => {
     setSelectedCrop(crop); // Set the selected crop's data
@@ -35,7 +84,6 @@ function CropData() {
   };
 
   const handleCancel = () => {
-    console.log('Clicked cancel button');
     setOpenCropDetials(false);
   };
 
@@ -89,13 +137,13 @@ function CropData() {
       title: 'Growth Duration (days)',
       dataIndex: 'growthDuration',
       key: 'growthDuration',
-      render: (text) => `${text} days`, // Add "days" to the growth duration
+      render: (text) => `${text}`,
     },
     {
       title: 'Average Yield (tons/ha)',
       dataIndex: 'averageYield',
       key: 'averageYield',
-      render: (text) => `${text}`, // Assuming this is the unit
+      render: (text) => `${text}`,
     },
     {
       title: 'Water Requirements',
@@ -106,7 +154,7 @@ function CropData() {
       title: 'Region',
       dataIndex: 'region',
       key: 'region',
-      render: (regions) => regions.join(', '), // Join regions with commas
+      render: (regions) => regions.join(', '),
     },
     {
       title: '',
@@ -135,17 +183,9 @@ function CropData() {
         const response = await axios.post("http://localhost:5000/api/crops/getcropdata");
         console.log("Crops data:", response.data.crops);
 
-        if (Array.isArray(response.data.crops)) {
-          response.data.crops.forEach(crop => {
-            console.log("Crop ID:", crop._id); // Ensure _id is present in each crop
-          });
-        } else {
-          console.error("Expected an array of crops but got:", response.data.crops);
-        }
-
         const cropsWithKeys = response.data.crops.map((crop, index) => ({
           ...crop,
-          key: crop._id || index, // Use crop._id as key if available, otherwise fallback to index
+          key: crop._id || index,
         }));
         setCrops(cropsWithKeys);
       } catch (error) {
@@ -177,15 +217,10 @@ function CropData() {
           width={720}
           onClose={onClose}
           open={openAddCrop}
-          styles={{
-            body: {
-              paddingBottom: 80,
-            },
-          }}
           extra={
             <Space>
               <Button onClick={onClose}>Cancel</Button>
-              <Button onClick={onClose} type="primary" className='bg-[#0c6c41]'>
+              <Button onClick={addNewCrop} type="primary" className='bg-[#0c6c41]'>
                 Submit
               </Button>
             </Space>
@@ -204,7 +239,11 @@ function CropData() {
                     },
                   ]}
                 >
-                  <Input placeholder="Enter crop image url" />
+                  <Input
+                    placeholder="Enter crop image url"
+                    value={crop}
+                    onChange={(e) => setCrop(e.target.value)}
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -218,7 +257,11 @@ function CropData() {
                     },
                   ]}
                 >
-                  <Input placeholder="Enter crop name" />
+                  <Input
+                    placeholder="Enter crop name"
+                    value={cropName}
+                    onChange={(e) => setCropName(e.target.value)}
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -234,7 +277,11 @@ function CropData() {
                     },
                   ]}
                 >
-                  <Input placeholder="Enter scientific name" />
+                  <Input
+                    placeholder="Enter scientific name"
+                    value={scientificName}
+                    onChange={(e) => setScientificName(e.target.value)}
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -244,11 +291,15 @@ function CropData() {
                   rules={[
                     {
                       required: true,
-                      message: 'Please choose the planting season',
+                      message: 'Please select planting season',
                     },
                   ]}
                 >
-                  <Select placeholder="Choose the planting season">
+                  <Select
+                    placeholder="Select planting season"
+                    value={plantingSeason}
+                    onChange={(value) => setPlantingSeason(value)}
+                  >
                     <Option value="Maha">Maha</Option>
                     <Option value="Yala">Yala</Option>
                     <Option value="Maha/Yala">Maha/Yala</Option>
@@ -264,11 +315,15 @@ function CropData() {
                   rules={[
                     {
                       required: true,
-                      message: 'Please choose the soil type',
+                      message: 'Please select soil type',
                     },
                   ]}
                 >
-                  <Select placeholder="Choose the soil type">
+                  <Select
+                    placeholder="Select soil type"
+                    value={soilType}
+                    onChange={(value) => setSoilType(value)}
+                  >
                     <Option value="Alluvial">Alluvial</Option>
                     <Option value="Red Loam">Red Loam</Option>
                     <Option value="Sandy Loam">Sandy Loam</Option>
@@ -280,7 +335,7 @@ function CropData() {
               <Col span={12}>
                 <Form.Item
                   name="growthduration"
-                  label="Growth Duration (days)"
+                  label="Growth Duration (in days)"
                   rules={[
                     {
                       required: true,
@@ -288,11 +343,14 @@ function CropData() {
                     },
                   ]}
                 >
-                  <Input placeholder="Enter growth duration" />
+                  <Input
+                    placeholder="Enter growth duration"
+                    value={growthDuration}
+                    onChange={(e) => setGrowthDuration(e.target.value)}
+                  />
                 </Form.Item>
               </Col>
             </Row>
-
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item
@@ -305,7 +363,11 @@ function CropData() {
                     },
                   ]}
                 >
-                  <Input placeholder="Enter average yield" />
+                  <Input
+                    placeholder="Enter average yield"
+                    value={averageYield}
+                    onChange={(e) => setAverageYield(e.target.value)}
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -315,11 +377,15 @@ function CropData() {
                   rules={[
                     {
                       required: true,
-                      message: 'Please choose the water requirements',
+                      message: 'Please select water requirements',
                     },
                   ]}
                 >
-                  <Select placeholder="Choose the water requirements">
+                  <Select
+                    placeholder="Select water requirements"
+                    value={waterRequirements}
+                    onChange={(value) => setWaterRequirements(value)}
+                  >
                     <Option value="High">High</Option>
                     <Option value="Medium">Medium</Option>
                     <Option value="Low">Low</Option>
@@ -327,7 +393,6 @@ function CropData() {
                 </Form.Item>
               </Col>
             </Row>
-
             <Row gutter={16}>
               <Col span={24}>
                 <Form.Item
@@ -341,41 +406,15 @@ function CropData() {
                   ]}
                 >
                   <Checkbox.Group
+                    options={[
+                      'Western', 'Central', 'Southern', 'Northern', 'Eastern', 'North Wester', 'North Central', 'Uva', 'Sabaragamuwa'
+                    ]}
+                    value={region}
+                    onChange={onChangeRegion}
                     style={{
                       width: '100%',
                     }}
-                    onChange={onChange}
-                  >
-                    <Row>
-                      <Col span={8}>
-                        <Checkbox value="Western">Western</Checkbox>
-                      </Col>
-                      <Col span={8}>
-                        <Checkbox value="Central">Central</Checkbox>
-                      </Col>
-                      <Col span={8}>
-                        <Checkbox value="Southern">Southern</Checkbox>
-                      </Col>
-                      <Col span={8}>
-                        <Checkbox value="Northern">Northern</Checkbox>
-                      </Col>
-                      <Col span={8}>
-                        <Checkbox value="Eastern">Eastern</Checkbox>
-                      </Col>
-                      <Col span={8}>
-                        <Checkbox value="North Western">North Western</Checkbox>
-                      </Col>
-                      <Col span={8}>
-                        <Checkbox value="North Central">North Central</Checkbox>
-                      </Col>
-                      <Col span={8}>
-                        <Checkbox value="Uva">Uva</Checkbox>
-                      </Col>
-                      <Col span={8}>
-                        <Checkbox value="Sabaragamuwa">Sabaragamuwa</Checkbox>
-                      </Col>
-                    </Row>
-                  </Checkbox.Group>
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -392,14 +431,19 @@ function CropData() {
                     },
                   ]}
                 >
-                  <Input.TextArea rows={4} placeholder="Enter description" />
+                  <Input.TextArea
+                    rows={4}
+                    placeholder="Enter description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
                 </Form.Item>
               </Col>
             </Row>
           </Form>
         </Drawer>
       </div>
-      <Table columns={columns} dataSource={crops} className='m-[7px] px-[7px]' />
+      <Table columns={columns} dataSource={crops} />
       <Modal
         title="Crop Details"
         open={openCropDetails}
@@ -418,7 +462,7 @@ function CropData() {
               </span>
             </div>
             <img className="w-[193px] h-[193px] left-[25%] top-[30px] absolute" src={selectedCrop.crop[0] || "https://via.placeholder.com/193x193"} alt={selectedCrop.cropName} />
-            <div className="w-[430px] h-[364px] left-[20px] top-[320px] absolute text-justify text-black text-base font-normal font-['Poppins'] leading-snug text-[12px]">
+            <div className="w-[430px] h-[364px] left-[20px] top-[320px] absolute text-justify text-black text-base font-normal font-['Poppins'] leading-snug" style={{ fontSize: "12px" }}>
               {selectedCrop.description || "No description available."}
             </div>
           </div>
