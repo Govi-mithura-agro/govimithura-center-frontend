@@ -1,8 +1,11 @@
 import React from 'react'
+import Home from '../pages/Home'
 
 function Mesure() {
   return (
-    <div>Mesure</div>
+    <div>
+      <Home/>
+    </div>
   )
 }
 
