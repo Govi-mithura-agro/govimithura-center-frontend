@@ -2,7 +2,7 @@ import React from 'react';
 
 function ManageFertilizers() {
   return (
-    <div className="bg-[#e7e7e7]">
+    <div >
    <div className='flex mt'></div>
       <div className="w-[1096px] h-[412px] relative bg-white rounded-[11px] p-4 mt-10 mx-auto">
         {/* Header and Description */}

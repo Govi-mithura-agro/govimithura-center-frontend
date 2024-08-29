@@ -2,7 +2,7 @@ import React from 'react'
 
 function RequestFertilizers() {
   return (
-    <div className="bg-[#e7e7e7]">
+    <div >
       <div className="flex justify-between mr-3 ml-3 ">
         <div className="w-[253px] h-[138px] pl-5 pr-3 py-3 bg-[#54b435]/20 rounded-[11px] border flex flex-col justify-center items-center gap-4 mt-5">
           <div className="text-black/20 text-lg font-medium font-['Poppins'] leading-7">Approved</div>
