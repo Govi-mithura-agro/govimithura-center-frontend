@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import "../styles/Cardhome.css";
-import Card from "./Card";
-import { FaSearch } from "react-icons/fa";
-import axios from "axios";
-import { message, Empty, Modal, Button, Spin } from "antd";
+import React, { useState, useEffect } from 'react';
+import { MdArrowBack } from 'react-icons/md';
+import '../SavedTemplates/SavedTemplatesWeb.css';
+import Card from './Card';
+import { FaSearch } from 'react-icons/fa';
+import axios from 'axios';
+import { message, Empty, Modal, Button, Spin } from 'antd';
 
 const SavedTemplatesWeb = ({
   onBackToSidebar,
@@ -11,22 +12,20 @@ const SavedTemplatesWeb = ({
   handleEditTemplateClick,
 }) => {
   const [mapDetails, setMapDetails] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [mapDetailToDelete, setMapDetailToDelete] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const getAllMapDetails = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/mapTemplate/getAllMapDetails"
-      );
-      console.log("API Response:", response.data); // Debugging line
+      const response = await axios.get("http://localhost:5000/api/mapTemplate/getAllMapDetails");
+      console.log('API Response:', response.data); // Debugging line
       setMapDetails(response.data);
       setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch map details:", error);
-      message.error("Failed to fetch map details");
+      console.error('Failed to fetch map details:', error);
+      message.error('Failed to fetch map details');
       setLoading(false); // Ensure loading is turned off even if there’s an error
     }
   };
@@ -38,21 +37,22 @@ const SavedTemplatesWeb = ({
 
   const handleDeleteConfirm = () => {
     if (mapDetailToDelete) {
-      axios
-        .delete(
-          `http://localhost:5000/api/map/deleteMapDetail/${mapDetailToDelete._id}`
-        )
+      axios.delete(
+        `http://localhost:5000/api/map/deleteMapDetail/${mapDetailToDelete._id}`
+      )
         .then(() => {
-          message.success("Map detail deleted successfully");
+          message.success('Map detail deleted successfully');
           setMapDetails(
-            mapDetails.filter((detail) => detail._id !== mapDetailToDelete._id)
+            mapDetails.filter(
+              (detail) => detail._id !== mapDetailToDelete._id
+            )
           );
           setDeleteModalVisible(false);
           setMapDetailToDelete(null);
         })
         .catch((error) => {
-          console.error("Failed to delete map detail:", error);
-          message.error("Failed to delete map detail");
+          console.error('Failed to delete map detail:', error);
+          message.error('Failed to delete map detail');
         });
     }
   };
@@ -73,31 +73,35 @@ const SavedTemplatesWeb = ({
   const filteredMapDetails = mapDetails.filter((detail) =>
     detail.templateName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
 
-  console.log("Filtered Map Details:", filteredMapDetails); // Debugging line
+  console.log('Filtered Map Details:', filteredMapDetails); // Debugging line
 
   return (
     <>
-      <div className="innerDiv">
-        <div className="headingDiv">
-          <div className="search-container">
+      <div className='innerDiv'>
+        <div className='backBtnDiv'>
+          <MdArrowBack onClick={onBackToSidebar} className='backBtn' />
+        </div>
+        <div className='headingDiv'>
+          <div className='search-container'>
             <input
-              type="text"
-              className="search-bar"
-              placeholder="Search map details"
+              type='text'
+              className='search-bar'
+              placeholder='Search map details'
               value={searchTerm}
               onChange={handleSearchChange}
             />
-            <FaSearch className="search-icon" />
+            <FaSearch className='search-icon' />
           </div>
 
-          <div className="cardsDiv grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className='cardsDiv'>
             {loading ? (
-              <div className="spin-container">
-                <Spin size="large">
-                  <div className="content" />
+              <div className='spin-container'>
+                <Spin size='large'>
+                  <div className='content' />
                 </Spin>
-                <div className="loading-text">Loading map details...</div>
+                <div className='loading-text'>Loading map details...</div>
               </div>
             ) : (
               <>
@@ -105,12 +109,10 @@ const SavedTemplatesWeb = ({
                   filteredMapDetails.map((detail) => (
                     <Card
                       key={detail._id}
-                      templateName={detail.templateName}
+                      templateName={detail.name}
                       location={detail.location}
                       date={detail.date}
                       imageUrl={detail.imageUrl}
-                      description={detail.description}
-                      landType={detail.landType}
                       onClick={() => onCardClick(detail)}
                       onDelete={() => showDeleteConfirm(detail)}
                       onEdit={() => handleEditTemplateClick(detail)}
@@ -129,17 +131,17 @@ const SavedTemplatesWeb = ({
       </div>
 
       <Modal
-        title="Confirm Delete"
+        title='Confirm Delete'
         visible={deleteModalVisible}
         onCancel={handleDeleteCancel}
         centered
         footer={[
-          <Button key="cancel" onClick={handleDeleteCancel}>
+          <Button key='cancel' onClick={handleDeleteCancel}>
             Cancel
           </Button>,
           <Button
-            key="delete"
-            type="primary"
+            key='delete'
+            type='primary'
             danger
             onClick={handleDeleteConfirm}
           >
