@@ -1,5 +1,4 @@
 .card-container {
-  width: 100%;
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 6px 0 hsla(0, 0%, 0%, 0.2);
@@ -10,8 +9,8 @@
 
 @media (min-width: 768px) {
   .card-container {
-    width: 360px; /* Increase the width */
-    height: 160px;
+    width: 380px; /* Increase the width */
+    height: 130px;
   }
 }
 
@@ -70,8 +69,8 @@
 @media (min-width: 768px) {
   .card-image,
   .image-loader {
-    width: 5rem;
-    height: 5rem;
+    width: 6rem;
+    height: 6rem;
   }
 }
 
@@ -80,11 +79,12 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 50%; /* Adjust this value as needed */
+  max-width: 60%; /* Adjust this value as needed */
   overflow: hidden; /* This will prevent content from spilling out */
 }
 .templateName {
-  font-size: 15px;
+  padding-top: 10px;
+  font-size: 18px;
   color: black;
   font-weight: 500;
 }
@@ -108,13 +108,13 @@
 }
 
 .edit-icon {
-  top: 12px;
-  right: 8px;
+  top: 60px;
+  right: 15px;
   font-size: 20px;
 }
 
 .delete-icon {
   bottom: 13px;
-  right: 8px;
+  right: 15px;
   font-size: 20px;
 }

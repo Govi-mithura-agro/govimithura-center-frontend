@@ -3,6 +3,7 @@
 }
 
 .innerDiv {
+  width: 100%;
   margin: 5px;
 }
 
@@ -43,7 +44,7 @@
   display: flex;
   align-items: left;
   justify-content: flex-start;
-  width: 30%;
+  width: 50%;
   margin: auto;
   position: relative;
   padding-left: 10px;

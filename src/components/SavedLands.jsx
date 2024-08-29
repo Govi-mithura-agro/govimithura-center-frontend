@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../styles/SavedTemplatesWeb.css";
+import "../styles/Cardhome.css";
 import Card from "./Card";
 import { FaSearch } from "react-icons/fa";
 import axios from "axios";
