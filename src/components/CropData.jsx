@@ -30,8 +30,11 @@ function CropData() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const addSuccess = () => {
-    messageApi.success('Crop added successfully!');
-  };
+    messageApi.success('Crop added successfully!').then(() => {
+        window.location.reload();
+    });
+};
+
 
   const addError = () => {
     messageApi.error('Failed to add crop. Please try again.');
@@ -44,6 +47,19 @@ function CropData() {
   const onChangeRegion = (checkedValues) => {
     setRegion(checkedValues);
   };
+
+  async function deleteCrop(id) {
+    try {
+      const data = (
+        await axios.delete(
+          `http://localhost:5000/api/crops/deletecrop/${id}`
+        )
+      ).data;
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async function addNewCrop(e) {
     e.preventDefault();
