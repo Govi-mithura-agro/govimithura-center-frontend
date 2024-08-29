@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
-import { Input, Button, Space, Table, Modal, Col, Drawer, Form, Row, Select, Checkbox, message } from 'antd';
+import { Input, Button, Space, Table, Modal, Col, Drawer, Form, Row, Select, Checkbox, message, Popconfirm } from 'antd';
 import { Icon } from "@iconify/react";
 import '../styles/CropData.css';
 import axios from "axios";
@@ -29,11 +29,20 @@ function CropData() {
 
   const [messageApi, contextHolder] = message.useMessage();
 
+  const confirm = (e) => {
+    console.log(e);
+    message.success('Click on Yes');
+  };
+  const cancel = (e) => {
+    console.log(e);
+    message.error('Click on No');
+  };
+
   const addSuccess = () => {
     messageApi.success('Crop added successfully!').then(() => {
-        window.location.reload();
+      window.location.reload();
     });
-};
+  };
 
 
   const addError = () => {
@@ -50,14 +59,13 @@ function CropData() {
 
   async function deleteCrop(id) {
     try {
-      const data = (
-        await axios.delete(
-          `http://localhost:5000/api/crops/deletecrop/${id}`
-        )
-      ).data;
-      console.log(data);
+      const response = await axios.delete(`http://localhost:5000/api/crops/deletecrop/${id}`);
+      console.log(response.data);
+      messageApi.success('Crop deleted successfully!');
+      setCrops((prevCrops) => prevCrops.filter(crop => crop._id !== id));
     } catch (error) {
       console.log(error);
+      messageApi.error('Failed to delete crop. Please try again.');
     }
   }
 
@@ -217,7 +225,16 @@ function CropData() {
       render: (_, record) => (
         <Space size="middle">
           <a href={`/invite/${record.key}`}><Button size="large" className='bg-[#379237] text-[white]'>Update</Button></a>
-          <a href={`/delete/${record.key}`}><Button size="large" className='bg-[red] text-[white]'>Delete</Button></a>
+          <Popconfirm
+            title="Delete the crop"
+            description="Are you sure to delete this crop?"
+            onConfirm={() => deleteCrop(record._id)}
+            onCancel={() => messageApi.info('Cancelled')}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button size="large" className='bg-[red] text-[white]'>Delete</Button>
+          </Popconfirm>
         </Space>
       ),
     },
