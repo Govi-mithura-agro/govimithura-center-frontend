@@ -29,15 +29,6 @@ function CropData() {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const confirm = (e) => {
-    console.log(e);
-    message.success('Click on Yes');
-  };
-  const cancel = (e) => {
-    console.log(e);
-    message.error('Click on No');
-  };
-
   const addSuccess = () => {
     messageApi.success('Crop added successfully!').then(() => {
       window.location.reload();
@@ -161,7 +152,7 @@ function CropData() {
               key={index}
               src={image}
               alt={`Crop ${index + 1}`}
-              style={{ width: '40px', height: '40px', marginRight: '10px' }}
+              className="w-10 h-10 mr-3"
             />
           ))}
         </div>
@@ -171,43 +162,51 @@ function CropData() {
       title: 'Crop Name',
       dataIndex: 'cropName',
       key: 'cropName',
+      className: 'px-4', // Additional padding for spacing
     },
     {
       title: 'Scientific Name',
       dataIndex: 'scientificName',
       key: 'scientificName',
+      className: 'px-4',
     },
     {
       title: 'Planting Season',
       dataIndex: 'plantingSeason',
       key: 'plantingSeason',
+      className: 'px-4',
     },
     {
       title: 'Soil Type',
       dataIndex: 'soilType',
       key: 'soilType',
+      className: 'px-4',
     },
     {
       title: 'Growth Duration (days)',
       dataIndex: 'growthDuration',
       key: 'growthDuration',
+      className: 'px-4',
       render: (text) => `${text}`,
     },
     {
       title: 'Average Yield (tons/ha)',
       dataIndex: 'averageYield',
       key: 'averageYield',
+      className: 'px-4',
       render: (text) => `${text}`,
     },
     {
       title: 'Water Requirements',
       dataIndex: 'waterRequirements',
       key: 'waterRequirements',
+      className: 'px-4',
     },
     {
       title: 'Region',
       dataIndex: 'region',
       key: 'region',
+      className: 'px-4',
       render: (regions) => regions.join(', '),
     },
     {
@@ -224,7 +223,7 @@ function CropData() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <a href={`/invite/${record.key}`}><Button size="large" className='bg-[#379237] text-[white]'>Update</Button></a>
+          <a href={`/invite/${record.key}`}><Button size="large" className='bg-[#379237] text-white'>Update</Button></a>
           <Popconfirm
             title="Delete the crop"
             description="Are you sure to delete this crop?"
@@ -233,7 +232,7 @@ function CropData() {
             okText="Yes"
             cancelText="No"
           >
-            <Button size="large" className='bg-[red] text-[white]'>Delete</Button>
+            <Button size="large" className='bg-red-600 text-white'>Delete</Button>
           </Popconfirm>
         </Space>
       ),
@@ -507,7 +506,14 @@ function CropData() {
           </Form>
         </Drawer>
       </div>
-      <Table columns={columns} dataSource={crops} />
+      <div className="m-4 bg-white rounded-xl p-4">
+        <Table
+          columns={columns}
+          dataSource={crops}
+          scroll={{ x: 1500 }} // Adjust this value as needed for horizontal scrolling
+          pagination={{ pageSize: 10 }}
+        />
+      </div>
       <Modal
         title="Crop Details"
         open={openCropDetails}
