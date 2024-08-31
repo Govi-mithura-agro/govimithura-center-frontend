@@ -4,9 +4,130 @@ import { Input, Button, Space, Table, Modal, Col, Drawer, Form, Row, Select, Che
 import { Icon } from "@iconify/react";
 import '../styles/CropData.css';
 import axios from "axios";
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from '@react-pdf/renderer';
+
 
 const { Search } = Input;
 const { Option } = Select;
+
+// Define styles for PDF
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#E4E4E4'
+  },
+  header: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1
+  },
+  headerText: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#4A4A4A'
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    marginBottom: 10
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1
+  },
+  title: {
+    fontSize: 24,
+    textAlign: 'center',
+    marginBottom: 10
+  },
+  table: {
+    display: "table",
+    width: "auto",
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderRightWidth: 0,
+    borderBottomWidth: 0
+  },
+  tableRow: {
+    margin: "auto",
+    flexDirection: "row"
+  },
+  tableCol: {
+    width: "25%",
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0
+  },
+  tableCell: {
+    margin: "auto",
+    marginTop: 5,
+    fontSize: 10
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 30,
+    left: 0,
+    right: 0,
+    textAlign: 'center',
+    color: 'grey',
+    fontSize: 12,
+  },
+});
+
+
+// Define the PDF Document component
+const MyDocument = ({ crops }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.header}>
+        <Image style={styles.logo} src="/path/to/your/logo.png" />
+        <Text style={styles.headerText}>Crop Data Report</Text>
+      </View>
+      <View style={styles.section}>
+        <Text style={styles.title}>Crop Details</Text>
+        <View style={styles.table}>
+          <View style={styles.tableRow}>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Crop Name</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Scientific Name</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Planting Season</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Water Requirements</Text>
+            </View>
+          </View>
+          {crops.map((crop) => (
+            <View style={styles.tableRow} key={crop._id}>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{crop.cropName}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{crop.scientificName}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{crop.plantingSeason}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{crop.waterRequirements}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+      <Text style={styles.footer}>Generated on {new Date().toLocaleDateString()}</Text>
+    </Page>
+  </Document>
+);
+
+
+
+
 
 function CropData() {
   const [openCropDetails, setOpenCropDetials] = useState(false);
@@ -427,7 +548,21 @@ function CropData() {
         </Select>
 
 
-        <Button type="primary" icon={<DownloadOutlined />} size={size} className="bg-[#bfbfbf]" />
+        <PDFDownloadLink
+          document={<MyDocument crops={filteredCrops} />}
+          fileName="crop_data.pdf"
+        >
+          {({ blob, url, loading, error }) =>
+            loading ? (
+              'Loading document...'
+            ) : (
+              <Button type="primary" icon={<DownloadOutlined />} size={size} className="bg-[#bfbfbf]">
+                Download PDF
+              </Button>
+            )
+          }
+        </PDFDownloadLink>
+
         <Button type="primary" icon={<Icon icon="ic:baseline-plus" />} className="bg-[#0c6c41] ml-auto font-['Poppins'] w-[150px] h-[40px]" onClick={showDrawer}>
           Add New Crop
         </Button>
