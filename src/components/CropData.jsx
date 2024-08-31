@@ -17,6 +17,9 @@ function CropData() {
   const [crops, setCrops] = useState([]);
 
   const [filteredCrops, setFilteredCrops] = useState([]);
+  const [selectedPlantingSeason, setSelectedPlantingSeason] = useState(null);
+  const [selectedWaterRequirements, setSelectedWaterRequirements] = useState(null);
+
 
 
   const [crop, setCrop] = useState('');
@@ -35,6 +38,8 @@ function CropData() {
   const [updatOpen, setUpdateOpen] = useState(false);
 
   const [updateForm] = Form.useForm();
+
+
 
   const updateShowDrawer = (crop) => {
     setSelectedCrop(crop);
@@ -338,13 +343,43 @@ function CropData() {
     fetchCropsDetails();
   }, []);
 
+  useEffect(() => {
+    filterCrops();
+  }, [selectedPlantingSeason, selectedWaterRequirements, crops]);
+
+  const filterCrops = () => {
+    let filtered = [...crops];
+
+    if (selectedPlantingSeason && selectedPlantingSeason !== 'All') {
+      filtered = filtered.filter(crop => crop.plantingSeason === selectedPlantingSeason);
+    }
+
+    if (selectedWaterRequirements && selectedWaterRequirements !== 'All') {
+      filtered = filtered.filter(crop => crop.waterRequirements === selectedWaterRequirements);
+    }
+
+
+    setFilteredCrops(filtered);
+  };
+
+
   const onSearch = (value) => {
     const lowercasedValue = value.toLowerCase();
-    const filtered = crops.filter(crop => 
+    const filtered = crops.filter(crop =>
       crop.cropName.toLowerCase().includes(lowercasedValue)
     );
     setFilteredCrops(filtered);
   };
+
+  const handlePlantingSeasonChange = (value) => {
+    setSelectedPlantingSeason(value);
+  };
+
+  const handleWaterRequirementsChange = (value) => {
+    setSelectedWaterRequirements(value);
+  };
+
+
 
   return (
     <>
@@ -354,9 +389,45 @@ function CropData() {
         <Search
           placeholder="Search by Crop name"
           onSearch={onSearch}
-          className="w-[200px]"
+          style={{
+            width: '250px',
+            height: '40px',
+          }}
+          size='large'
         />
-        <Button type="primary" icon={<DownloadOutlined />} size={size} className="relative left-[620px] bg-[#bfbfbf]" />
+        <Select
+          placeholder="Select planting season"
+          style={{
+            width: '200px',
+            height: '40px',
+          }}
+          size='large'
+          onChange={handlePlantingSeasonChange}
+          defaultValue="All"
+        >
+          <Option value="All">Planting season -- All</Option>
+          <Option value="Maha">Maha</Option>
+          <Option value="Yala">Yala</Option>
+          <Option value="Maha/Yala">Maha/Yala</Option>
+        </Select>
+        <Select
+          placeholder="Select water requirements"
+          style={{
+            width: '250px',
+            height: '40px',
+          }}
+          size='large'
+          onChange={handleWaterRequirementsChange}
+          defaultValue="All"
+        >
+          <Option value="All">Water requirements -- All</Option>
+          <Option value="High">High</Option>
+          <Option value="Medium">Medium</Option>
+          <Option value="Low">Low</Option>
+        </Select>
+
+
+        <Button type="primary" icon={<DownloadOutlined />} size={size} className="bg-[#bfbfbf]" />
         <Button type="primary" icon={<Icon icon="ic:baseline-plus" />} className="bg-[#0c6c41] ml-auto font-['Poppins'] w-[150px] h-[40px]" onClick={showDrawer}>
           Add New Crop
         </Button>
