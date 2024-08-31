@@ -51,26 +51,30 @@ function CropData() {
       region: crop.region,
       description: crop.description,
     });
+
   };
 
   const handleUpdateCrop = async () => {
 
-    if (crop === '' || cropName === '' || scientificName === '' || plantingSeason === '' || soilType === '' || growthDuration === '' ||
-      averageYield === '' || waterRequirements === '' || region.length === 0 || description === '') {
-      addWarning('Please fill in all required fields.');
-      return;
-    }
-    // Validation for numeric fields
-    if (isNaN(growthDuration) || growthDuration === '') {
-      addWarning('Please enter a valid number for Growth Duration.');
-      return;
-    }
-    if (isNaN(averageYield) || averageYield === '') {
-      addWarning('Please enter a valid number for Average Yield.');
-      return;
-    }
     try {
+      // Validate and get the form values
       const values = await updateForm.validateFields();
+
+      // Check if all required fields are filled
+      if (Object.values(values).some(value => value === undefined || value === '')) {
+        addWarning('Please fill in all required fields.');
+        return;
+      }
+
+      // Validation for numeric fields
+      if (isNaN(values.growthduration) || values.growthduration === '') {
+        addWarning('Please enter a valid number for Growth Duration.');
+        return;
+      }
+      if (isNaN(values.averageyield) || values.averageyield === '') {
+        addWarning('Please enter a valid number for Average Yield.');
+        return;
+      }
 
       const updatedCrop = {
         ...selectedCrop,
@@ -88,20 +92,12 @@ function CropData() {
 
       // Send update request to your API
       const response = await axios.put(`http://localhost:5000/api/crops/editcrop/${selectedCrop._id}`, updatedCrop);
-
-      if (response.data.success) {
-        messageApi.success('Crop updated successfully!');
-        setUpdateOpen(false);
-        // Refresh the crops data
-        const updatedCrops = crops.map(crop =>
-          crop._id === selectedCrop._id ? updatedCrop : crop
-        );
-        setCrops(updatedCrops);
-      } else {
-        messageApi.error('Failed to update crop. Please try again.');
-      }
+      messageApi.success('Crop updated successfully!').then(() => {
+        window.location.reload();
+      });;
+      setUpdateOpen(false);
     } catch (error) {
-      console.error('Error updating crop:', error);
+      console.error(error);
       messageApi.error('Failed to update crop. Please try again.');
     }
   };
@@ -369,7 +365,7 @@ function CropData() {
             </Space>
           }
         >
-          <Form layout="vertical" hideRequiredMark>
+          <Form layout="vertical">
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item
