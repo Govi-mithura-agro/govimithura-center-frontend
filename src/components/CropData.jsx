@@ -16,6 +16,8 @@ function CropData() {
   const [size, setSize] = useState('large');
   const [crops, setCrops] = useState([]);
 
+  const [filteredCrops, setFilteredCrops] = useState([]);
+
 
   const [crop, setCrop] = useState('');
   const [cropName, setCropName] = useState('');
@@ -328,6 +330,7 @@ function CropData() {
           key: crop._id || index,
         }));
         setCrops(cropsWithKeys);
+        setFilteredCrops(cropsWithKeys); // Initialize filteredCrops with all crops
       } catch (error) {
         console.log("Error fetching crops:", error);
       }
@@ -335,7 +338,13 @@ function CropData() {
     fetchCropsDetails();
   }, []);
 
-  const onSearch = (value) => console.log('Search:', value);
+  const onSearch = (value) => {
+    const lowercasedValue = value.toLowerCase();
+    const filtered = crops.filter(crop => 
+      crop.cropName.toLowerCase().includes(lowercasedValue)
+    );
+    setFilteredCrops(filtered);
+  };
 
   return (
     <>
@@ -585,8 +594,8 @@ function CropData() {
       <div className="m-4 bg-white rounded-xl p-4">
         <Table
           columns={columns}
-          dataSource={crops}
-          scroll={{ x: 1500 }} // Adjust this value as needed for horizontal scrolling
+          dataSource={filteredCrops} // Use filteredCrops instead of crops
+          scroll={{ x: 1500 }}
           pagination={{ pageSize: 10 }}
         />
       </div>
