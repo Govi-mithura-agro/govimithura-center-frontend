@@ -14,48 +14,57 @@ const { Option } = Select;
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
-    backgroundColor: '#E4E4E4'
+    backgroundColor: '#FFFFFF'
   },
   header: {
     margin: 10,
     padding: 10,
-    flexGrow: 1
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   headerText: {
-    fontSize: 18,
-    textAlign: 'center',
-    color: '#4A4A4A'
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#0c883d'
   },
   logo: {
-    width: 50,
+    width: 100,
     height: 50,
-    marginBottom: 10
   },
   section: {
     margin: 10,
     padding: 10,
-    flexGrow: 1
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
+    fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10
+    marginBottom: 20,
+    color: '#000000'
   },
   table: {
     display: "table",
     width: "auto",
     borderStyle: "solid",
+    borderColor: "#EEEEEE",
     borderWidth: 1,
     borderRightWidth: 0,
-    borderBottomWidth: 0
+    borderBottomWidth: 0,
   },
   tableRow: {
     margin: "auto",
-    flexDirection: "row"
+    flexDirection: "row",
+    backgroundColor: '#FFFFFF',
+  },
+  tableHeader: {
+    backgroundColor: '#e7ffe7',
+    color: '#FFFFFF',
   },
   tableCol: {
-    width: "25%",
+    width: "100px",
     borderStyle: "solid",
+    borderColor: "#EEEEEE",
     borderWidth: 1,
     borderLeftWidth: 0,
     borderTopWidth: 0
@@ -63,7 +72,9 @@ const styles = StyleSheet.create({
   tableCell: {
     margin: "auto",
     marginTop: 5,
-    fontSize: 10
+    marginBottom: 5,
+    fontSize: 10,
+    color: '#333333',
   },
   footer: {
     position: 'absolute',
@@ -71,26 +82,26 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     textAlign: 'center',
-    color: 'grey',
-    fontSize: 12,
+    color: '#888888',
+    fontSize: 10,
   },
 });
-
 
 // Define the PDF Document component
 const MyDocument = ({ crops }) => (
   <Document>
-    <Page size="A4" style={styles.page}>
+    <Page size="A3" style={styles.page}>
       <View style={styles.header}>
-        <Image style={styles.logo} src="/path/to/your/logo.png" />
-        <Text style={styles.headerText}>Crop Data Report</Text>
+        <Image style={styles.logo} src="../assets/govimithura_logo.svg" />
+        <Text style={styles.headerText}>Govi mithura</Text>
       </View>
       <View style={styles.section}>
-        <Text style={styles.title}>Crop Details</Text>
+        <Text style={styles.title}>Crop Data</Text>
         <View style={styles.table}>
-          <View style={styles.tableRow}>
+          <View style={[styles.tableRow, styles.tableHeader]}>
+
             <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Crop Name</Text>
+              <Text style={styles.tableCell}>Crop name</Text>
             </View>
             <View style={styles.tableCol}>
               <Text style={styles.tableCell}>Scientific Name</Text>
@@ -99,11 +110,23 @@ const MyDocument = ({ crops }) => (
               <Text style={styles.tableCell}>Planting Season</Text>
             </View>
             <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Soil Type</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Growth Duration (days)</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Average Yield (tons/ha)</Text>
+            </View>
+            <View style={styles.tableCol}>
               <Text style={styles.tableCell}>Water Requirements</Text>
             </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Region</Text>
+            </View>
           </View>
-          {crops.map((crop) => (
-            <View style={styles.tableRow} key={crop._id}>
+          {crops.map((crop, index) => (
+            <View style={[styles.tableRow, { backgroundColor: index % 2 === 0 ? '#F9F9F9' : '#FFFFFF' }]} key={crop._id}>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>{crop.cropName}</Text>
               </View>
@@ -114,7 +137,19 @@ const MyDocument = ({ crops }) => (
                 <Text style={styles.tableCell}>{crop.plantingSeason}</Text>
               </View>
               <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{crop.soilType}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{crop.growthDuration}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{crop.averageYield}</Text>
+              </View>
+              <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>{crop.waterRequirements}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{crop.region}</Text>
               </View>
             </View>
           ))}
@@ -124,10 +159,6 @@ const MyDocument = ({ crops }) => (
     </Page>
   </Document>
 );
-
-
-
-
 
 function CropData() {
   const [openCropDetails, setOpenCropDetials] = useState(false);
