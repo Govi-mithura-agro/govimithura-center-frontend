@@ -159,7 +159,7 @@ const MyDocument = ({ crops }) => (
 );
 
 function CropData() {
-  const [selectedCrop, setSelectedCrop] = useState(null); // State to hold the selected crop's data
+  const [selectedCropFactors, setSelectedCropFactors] = useState(null); // State to hold the selected crop's data
   const [size, setSize] = useState('large');
   const [factors, setFactors] = useState([]);
 
@@ -169,16 +169,26 @@ function CropData() {
 
 
 
-  const [crop, setCrop] = useState('');
-  const [cropName, setCropName] = useState('');
-  const [scientificName, setScientificName] = useState('');
-  const [plantingSeason, setPlantingSeason] = useState('');
-  const [soilType, setSoilType] = useState('');
-  const [growthDuration, setGrowthDuration] = useState('');
-  const [averageYield, setAverageYield] = useState('');
-  const [waterRequirements, setWaterRequirements] = useState('');
-  const [region, setRegion] = useState([]);
-  const [description, setDescription] = useState('');
+  const [province, setProvince] = useState('');
+  const [district, setDistrict] = useState('');
+  const [soiltype, setSoiltype] = useState('');
+  const [soilph, setSoilph] = useState('');
+  const [nutrientcontent, setNutrientcontent] = useState('');
+  const [temperature, setTemperature] = useState('');
+  const [rainfall, setrainfall] = useState('');
+  const [humidity, setHumidity] = useState('');
+  const [altitude, setAltitude] = useState('');
+  const [topography, setTopography] = useState('');
+  const [irrigationsystems, setIrrigationsystems] = useState('');
+  const [waterquality, setWaterquality] = useState('');
+  const [varietyselection, setVarietyselection] = useState('');
+  const [growthcycle, setGrowthcycle] = useState('');
+  const [pestpressure, setPestpressure] = useState('');
+  const [diseaseincidence, setDiseaseincidence] = useState('');
+  const [croprotation, setCroprotation] = useState('');
+  const [fertilizeruse, setFertilizeruse] = useState('');
+  const [demandandpricetrends, setDemandandpricetrends] = useState('');
+  const [supplychainefficiency, setsupplychainefficiencyion] = useState('');
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -188,22 +198,32 @@ function CropData() {
 
 
 
-  const updateShowDrawer = (crop) => {
-    setSelectedCrop(crop);
+  const updateShowDrawer = (factors) => {
+    setSelectedCropFactors(factors);
     setUpdateOpen(true);
 
     // Update the form fields with the selected crop's data
     updateForm.setFieldsValue({
-      cropimage: crop.crop[0],
-      cropname: crop.cropName,
-      scientificname: crop.scientificName,
-      plantingseason: crop.plantingSeason,
-      soiltype: crop.soilType,
-      growthduration: crop.growthDuration,
-      averageyield: crop.averageYield,
-      waterrequirements: crop.waterRequirements,
-      region: crop.region,
-      description: crop.description,
+      province: factors.province,
+      district: factors.district,
+      soiltype: factors.soiltype,
+      soilph: factors.soilph,
+      nutrientcontent: factors.nutrientcontent,
+      temperature: factors.temperature,
+      rainfall: factors.rainfall,
+      humidity: factors.humidity,
+      altitude: factors.altitude,
+      topography: factors.topography,
+      irrigationsystems: factors.irrigationsystems,
+      waterquality: factors.waterquality,
+      varietyselection: factors.varietyselection,
+      growthcycle: factors.growthcycle,
+      pestpressure: factors.pestpressure,
+      diseaseincidence: factors.diseaseincidence,
+      croprotation: factors.croprotation,
+      fertilizeruse: factors.fertilizeruse,
+      demandandpricetrends: factors.demandandpricetrends,
+      supplychainefficiency: factors.supplychainefficiency,
     });
 
   };
@@ -231,7 +251,7 @@ function CropData() {
       }
 
       const updatedCrop = {
-        ...selectedCrop,
+        ...selectedCropFactors,
         crop: [values.cropimage],
         cropName: values.cropname,
         scientificName: values.scientificname,
@@ -245,7 +265,7 @@ function CropData() {
       };
 
       // Send update request to your API
-      const response = await axios.put(`http://localhost:5000/api/crops/editcrop/${selectedCrop._id}`, updatedCrop);
+      const response = await axios.put(`http://localhost:5000/api/crops/editcrop/${selectedCropFactors._id}`, updatedCrop);
       messageApi.success('Crop updated successfully!').then(() => {
         window.location.reload();
       });;
@@ -264,11 +284,6 @@ function CropData() {
   const addWarning = (warningMessage) => {
     messageApi.warning(warningMessage);
   };
-
-  const onChangeRegion = (checkedValues) => {
-    setRegion(checkedValues);
-  };
-
 
   const columns = [
     {
@@ -527,7 +542,7 @@ function CropData() {
             loading ? (
               'Loading document...'
             ) : (
-              <Button type="primary" icon={<DownloadOutlined />} size={size} className="bg-[#bfbfbf]">
+              <Button type="primary" icon={<DownloadOutlined />} size={size} className="bg-[#bfbfbf] ml-[250px]">
                 Download PDF
               </Button>
             )
@@ -545,7 +560,7 @@ function CropData() {
 
       {/* Update drawer */}
       <Drawer
-        title="Update Crop Details"
+        title="Update Crop Factors"
         width={720}
         onClose={updateOnClose}
         open={updatOpen}
@@ -562,87 +577,47 @@ function CropData() {
         <Form form={updateForm} layout="vertical" hideRequiredMark>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item
-                name="cropimage"
-                label="Crop Image Url"
+            <Form.Item
+                name="province"
+                label="Province"
                 rules={[
                   {
                     required: true,
-                    message: 'Please enter crop image url',
+                    message: 'Please enter province',
                   },
                 ]}
               >
                 <Input
-                  placeholder="Enter crop image url"
-                  defaultValue={crop}
-                  onChange={(e) => setCrop(e.target.value)}
+                  placeholder="Enter province"
+                  defaultValue={province}
+                  onChange={(e) => setProvince(e.target.value)}
+                  readOnly={true}
                 />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                name="cropname"
-                label="Crop Name"
+                name="district"
+                label="District"
                 rules={[
                   {
                     required: true,
-                    message: 'Please enter crop name',
+                    message: 'Please enter district',
                   },
                 ]}
               >
                 <Input
-                  placeholder="Enter crop name"
-                  defaultValue={cropName}
-                  onChange={(e) => setCropName(e.target.value)}
+                  placeholder="Enter district"
+                  defaultValue={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                  readOnly={true}
                 />
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item
-                name="scientificname"
-                label="Scientific Name"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please enter scientific name',
-                  },
-                ]}
-              >
-                <Input
-                  placeholder="Enter scientific name"
-                  value={scientificName}
-                  onChange={(e) => setScientificName(e.target.value)}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="plantingseason"
-                label="Planting Season"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please select planting season',
-                  },
-                ]}
-              >
-                <Select
-                  placeholder="Select planting season"
-                  value={plantingSeason}
-                  onChange={(value) => setPlantingSeason(value)}
-                >
-                  <Option value="Maha">Maha</Option>
-                  <Option value="Yala">Yala</Option>
-                  <Option value="Maha/Yala">Maha/Yala</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
+            <Form.Item
                 name="soiltype"
                 label="Soil Type"
                 rules={[
@@ -654,8 +629,8 @@ function CropData() {
               >
                 <Select
                   placeholder="Select soil type"
-                  value={soilType}
-                  onChange={(value) => setSoilType(value)}
+                  value={soiltype}
+                  onChange={(value) => setSoiltype(value)}
                 >
                   <Option value="Alluvial">Alluvial</Option>
                   <Option value="Red Loam">Red Loam</Option>
@@ -666,20 +641,58 @@ function CropData() {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item
-                name="growthduration"
-                label="Growth Duration (in days)"
+            <Form.Item
+                name="soilph"
+                label="Soil PH"
                 rules={[
                   {
                     required: true,
-                    message: 'Please enter growth duration',
+                    message: 'Please enter soil ph',
                   },
                 ]}
               >
                 <Input
-                  placeholder="Enter growth duration"
-                  value={growthDuration}
-                  onChange={(e) => setGrowthDuration(e.target.value)}
+                  placeholder="Enter soil ph"
+                  defaultValue={soilph}
+                  onChange={(e) => setSoilph(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+            <Form.Item
+                name="nutrientcontent"
+                label="Nutrient Content"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please enter nutrient content',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter nutrientcontent"
+                  defaultValue={nutrientcontent}
+                  onChange={(e) => setNutrientcontent(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="temperature"
+                label="Temperature (°C)"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please enter temperature',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter temperature"
+                  value={temperature}
+                  onChange={(e) => setTemperature(e.target.value)}
                 />
               </Form.Item>
             </Col>
@@ -687,88 +700,285 @@ function CropData() {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="averageyield"
-                label="Average Yield (tons/ha)"
+                name="rainfall"
+                label="Rainfall (mm)"
                 rules={[
                   {
                     required: true,
-                    message: 'Please enter average yield',
+                    message: 'Please enter rainfall',
                   },
                 ]}
               >
                 <Input
-                  placeholder="Enter average yield"
-                  defaultValue={averageYield}
-                  onChange={(e) => setAverageYield(e.target.value)}
+                  placeholder="Enter average rainfall"
+                  defaultValue={rainfall}
+                  onChange={(e) => setrainfall(e.target.value)}
                 />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                name="waterrequirements"
-                label="Water Requirements"
+                name="humidity"
+                label="Humidity (%)"
                 rules={[
                   {
                     required: true,
-                    message: 'Please select water requirements',
+                    message: 'Please select water humidity',
                   },
                 ]}
               >
-                <Select
-                  placeholder="Select water requirements"
-                  value={waterRequirements}
-                  onChange={(value) => setWaterRequirements(value)}
-                >
-                  <Option value="High">High</Option>
-                  <Option value="Medium">Medium</Option>
-                  <Option value="Low">Low</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item
-                name="region"
-                label="Region"
-                rules={[
-                  {
-                    required: true,
-                    message: 'please enter region',
-                  },
-                ]}
-              >
-                <Checkbox.Group
-                  options={[
-                    'Western', 'Central', 'Southern', 'Northern', 'Eastern', 'North Wester', 'North Central', 'Uva', 'Sabaragamuwa'
-                  ]}
-                  value={region}
-                  onChange={onChangeRegion}
-                  style={{
-                    width: '100%',
-                  }}
+                <Input
+                  placeholder="Enter average humidity"
+                  defaultValue={humidity}
+                  onChange={(e) => setHumidity(e.target.value)}
                 />
               </Form.Item>
             </Col>
           </Row>
-
           <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item
-                name="description"
-                label="Description"
+            <Col span={12}>
+            <Form.Item
+                name="humidity"
+                label="Humidity (%)"
                 rules={[
                   {
                     required: true,
-                    message: 'please enter description',
+                    message: 'Please select water humidity',
                   },
                 ]}
               >
-                <Input.TextArea
-                  rows={4}
-                  placeholder="Enter description"
-                  defaultValue={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                <Input
+                  placeholder="Enter average humidity"
+                  defaultValue={humidity}
+                  onChange={(e) => setHumidity(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="altitude"
+                label="Altitude"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter altitude',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter altitude"
+                  defaultValue={altitude}
+                  onChange={(e) => setAltitude(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="topography"
+                label="Topography"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter topography',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter topography"
+                  defaultValue={topography}
+                  onChange={(e) => setTopography(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="irrigationsystems"
+                label="Irrigation Systems"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter irrigation systems',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter irrigation systems"
+                  defaultValue={irrigationsystems}
+                  onChange={(e) => setIrrigationsystems(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="waterquality"
+                label="Water Quality"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter water quality',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter water quality"
+                  defaultValue={waterquality}
+                  onChange={(e) => setWaterquality(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="varietyselection"
+                label="Variety Selection"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter varietyselection',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter varietyselection"
+                  defaultValue={varietyselection}
+                  onChange={(e) => setVarietyselection(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="growthcycle"
+                label="Growth Cycle"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter growthcycle',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter growthcycle"
+                  defaultValue={growthcycle}
+                  onChange={(e) => setGrowthcycle(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="pestpressure"
+                label="Pest Pressure"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter pest pressure',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter pest pressure"
+                  defaultValue={pestpressure}
+                  onChange={(e) => setPestpressure(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="diseaseincidence"
+                label="Disease Incidence"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter disease incidence',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter disease incidence"
+                  defaultValue={diseaseincidence}
+                  onChange={(e) => setDiseaseincidence(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="croprotation"
+                label="Crop Rotation"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter crop rotation',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter pest crop rotation"
+                  defaultValue={croprotation}
+                  onChange={(e) => setCroprotation(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="fertilizeruse"
+                label="Fertilizer Use"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter fertilizer use',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter fertilizer use"
+                  defaultValue={fertilizeruse}
+                  onChange={(e) => setFertilizeruse(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="demandandpricetrends"
+                label="Demand and Price Trends"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter demand and price trends',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter pest demand and price trends"
+                  defaultValue={demandandpricetrends}
+                  onChange={(e) => setDemandandpricetrends(e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="supplychainefficiency"
+                label="Supply Chain Efficiencyion"
+                rules={[
+                  {
+                    required: true,
+                    message: 'please enter supply chain efficiencyion',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter supply chain efficiencyion"
+                  defaultValue={supplychainefficiency}
+                  onChange={(e) => setsupplychainefficiencyion(e.target.value)}
                 />
               </Form.Item>
             </Col>
