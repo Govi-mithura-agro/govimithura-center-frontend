@@ -163,9 +163,9 @@ function CropData() {
   const [size, setSize] = useState('large');
   const [factors, setFactors] = useState([]);
 
-  const [filteredCrops, setFilteredCrops] = useState([]);
-  const [selectedPlantingSeason, setSelectedPlantingSeason] = useState(null);
-  const [selectedWaterRequirements, setSelectedWaterRequirements] = useState(null);
+  const [filterFactors, setFilterFactors] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState(null);
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
 
 
 
@@ -416,7 +416,8 @@ function CropData() {
           key: factor._id || index,
         }));
         setFactors(factorsWithKeys);
-        setFilteredCrops(factorsWithKeys); // Initialize filteredCrops with all crops
+        setFilterFactors(factorsWithKeys);
+
       } catch (error) {
         console.log("Error fetching crops:", error);
       }
@@ -425,30 +426,30 @@ function CropData() {
   }, []);
 
   useEffect(() => {
-    filterCrops();
-  }, [selectedPlantingSeason, selectedWaterRequirements, factors]);
+    filterCropFactors();
+  }, [selectedProvince, selectedDistrict, factors]);
 
-  const filterCrops = () => {
+  const filterCropFactors = () => {
     let filtered = [...factors];
 
-    if (selectedPlantingSeason && selectedPlantingSeason !== 'All') {
-      filtered = filtered.filter(crop => crop.plantingSeason === selectedPlantingSeason);
+    if (selectedProvince && selectedProvince !== 'All') {
+      filtered = filtered.filter(factors => factors.province === selectedProvince);
     }
 
-    if (selectedWaterRequirements && selectedWaterRequirements !== 'All') {
-      filtered = filtered.filter(crop => crop.waterRequirements === selectedWaterRequirements);
+    if (selectedDistrict && selectedDistrict !== 'All') {
+      filtered = filtered.filter(factors => factors.district === selectedDistrict);
     }
 
 
-    setFilteredCrops(filtered);
+    setFilterFactors(filtered);
   };
 
-  const handlePlantingSeasonChange = (value) => {
-    setSelectedPlantingSeason(value);
+  const handleProvinceChange = (value) => {
+    setSelectedProvince(value);
   };
 
-  const handleWaterRequirementsChange = (value) => {
-    setSelectedWaterRequirements(value);
+  const handleDistrictChange = (value) => {
+    setSelectedDistrict(value);
   };
 
 
@@ -465,13 +466,19 @@ function CropData() {
             height: '40px',
           }}
           size='large'
-          onChange={handlePlantingSeasonChange}
+          onChange={handleProvinceChange}
           defaultValue="All"
         >
-          <Option value="All">Planting season -- All</Option>
-          <Option value="Maha">Maha</Option>
-          <Option value="Yala">Yala</Option>
-          <Option value="Maha/Yala">Maha/Yala</Option>
+          <Option value="All">Province -- All</Option>
+          <Option value="Western">Western</Option>
+          <Option value="Central">Central</Option>
+          <Option value="Southern">Southern</Option>
+          <Option value="Northern">Northern</Option>
+          <Option value="Eastern">Eastern</Option>
+          <Option value="North Western">North Western</Option>
+          <Option value="North Central">North Central</Option>
+          <Option value="Uva">Uva</Option>
+          <Option value="Sabaragamuwa">Sabaragamuwa</Option>
         </Select>
         <Select
           placeholder="Select water requirements"
@@ -480,18 +487,40 @@ function CropData() {
             height: '40px',
           }}
           size='large'
-          onChange={handleWaterRequirementsChange}
+          onChange={handleDistrictChange}
           defaultValue="All"
         >
-          <Option value="All">Water requirements -- All</Option>
-          <Option value="High">High</Option>
-          <Option value="Medium">Medium</Option>
-          <Option value="Low">Low</Option>
+          <Option value="All">District -- All</Option>
+          <Option value="Colombo">Colombo</Option>
+          <Option value="Gampaha">Gampaha</Option>
+          <Option value="Kalutara">Kalutara</Option>
+          <Option value="Kandy">Kandy</Option>
+          <Option value="Matale">Matale</Option>
+          <Option value="Nuwara Eliya">Nuwara Eliya</Option>
+          <Option value="Galle">Galle</Option>
+          <Option value="Matara">Matara</Option>
+          <Option value="Hambantota">Hambantota</Option>
+          <Option value="Jaffna">Jaffna</Option>
+          <Option value="Kilinochchi">Kilinochchi</Option>
+          <Option value="Mannar">Mannar</Option>
+          <Option value="Vavuniya">Vavuniya</Option>
+          <Option value="Mullaitivu">Mullaitivu</Option>
+          <Option value="Trincomalee">LTrincomaleeow</Option>
+          <Option value="Batticaloa">Batticaloa</Option>
+          <Option value="Ampara">Ampara</Option>
+          <Option value="Kurunegala">Kurunegala</Option>
+          <Option value="Puttalam">Puttalam</Option>
+          <Option value="Anuradhapura">Anuradhapura</Option>
+          <Option value="Polonnaruwa">Polonnaruwa</Option>
+          <Option value="Badulla">Badulla</Option>
+          <Option value="Monaragala">Monaragala</Option>
+          <Option value="Ratnapura">Ratnapura</Option>
+          <Option value="Kegalle">Kegalle</Option>
         </Select>
 
 
         <PDFDownloadLink
-          document={<MyDocument crops={filteredCrops} />}
+          document={<MyDocument crops={filterFactors} />}
           fileName="crop_data.pdf"
         >
           {({ blob, url, loading, error }) =>
@@ -508,7 +537,7 @@ function CropData() {
       <div className="m-4 bg-white rounded-xl p-4">
         <Table
           columns={columns}
-          dataSource={filteredCrops} // Use filteredCrops instead of crops
+          dataSource={filterFactors} // Use filteredCrops instead of crops
           scroll={{ x: 1500 }}
           pagination={{ pageSize: 10 }}
         />
