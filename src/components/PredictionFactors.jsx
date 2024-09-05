@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import '../styles/CropData.css';
 import axios from "axios";
 import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from '@react-pdf/renderer';
+import { GovimithuraLogo } from '../assets';
 
 const { Option } = Select;
 
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   tableCol: {
-    width: "100px",
+    width: "87px",
     borderStyle: "solid",
     borderColor: "#EEEEEE",
     borderWidth: 1,
@@ -86,68 +87,137 @@ const styles = StyleSheet.create({
 });
 
 // Define the PDF Document component
-const MyDocument = ({ crops }) => (
+const MyDocument = ({ factors }) => (
   <Document>
-    <Page size="A3" style={styles.page}>
+    <Page size="A1" style={styles.page}>
       <View style={styles.header}>
-        <Image style={styles.logo} src="../assets/govimithura_logo.svg" />
+        <Image style={styles.logo} src={GovimithuraLogo} />
         <Text style={styles.headerText}>Govi mithura</Text>
       </View>
       <View style={styles.section}>
-        <Text style={styles.title}>Crop Data</Text>
+        <Text style={styles.title}>Crop Factors</Text>
         <View style={styles.table}>
           <View style={[styles.tableRow, styles.tableHeader]}>
 
             <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Crop name</Text>
+              <Text style={styles.tableCell}>Province</Text>
             </View>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Scientific Name</Text>
-            </View>
-            <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Planting Season</Text>
+              <Text style={styles.tableCell}>District</Text>
             </View>
             <View style={styles.tableCol}>
               <Text style={styles.tableCell}>Soil Type</Text>
             </View>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Growth Duration (days)</Text>
+              <Text style={styles.tableCell}>Soil PH</Text>
             </View>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Average Yield (tons/ha)</Text>
+              <Text style={styles.tableCell}>Nutrient Content</Text>
             </View>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Water Requirements</Text>
+              <Text style={styles.tableCell}>Temperature (°C)</Text>
             </View>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Region</Text>
+              <Text style={styles.tableCell}>Rainfall (mm)</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Humidity (%)</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Topography</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Irrigation Systems</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Water Quality</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Variety Selection</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Growth Cycle</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Pest Pressure</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Disease Incidence</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Crop Rotation</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Fertilizer Use</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Demand and Price Trends</Text>
+            </View>
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>Supply Chain Efficiency</Text>
             </View>
           </View>
-          {crops.map((crop, index) => (
-            <View style={[styles.tableRow, { backgroundColor: index % 2 === 0 ? '#F9F9F9' : '#FFFFFF' }]} key={crop._id}>
+          {factors.map((factor, index) => (
+            <View style={[styles.tableRow, { backgroundColor: index % 2 === 0 ? '#F9F9F9' : '#FFFFFF' }]} key={factor._id}>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{crop.cropName}</Text>
+                <Text style={styles.tableCell}>{factor.province}</Text>
               </View>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{crop.scientificName}</Text>
+                <Text style={styles.tableCell}>{factor.district}</Text>
               </View>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{crop.plantingSeason}</Text>
+                <Text style={styles.tableCell}>{factor.soiltype}</Text>
               </View>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{crop.soilType}</Text>
+                <Text style={styles.tableCell}>{factor.soilph}</Text>
               </View>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{crop.growthDuration}</Text>
+                <Text style={styles.tableCell}>{factor.nutrientcontent}</Text>
               </View>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{crop.averageYield}</Text>
+                <Text style={styles.tableCell}>{factor.temperature}</Text>
               </View>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{crop.waterRequirements}</Text>
+                <Text style={styles.tableCell}>{factor.rainfall}</Text>
               </View>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{crop.region}</Text>
+                <Text style={styles.tableCell}>{factor.humidity}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.altitude}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.topography}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.irrigationsystems}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.waterquality}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.varietyselection}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.growthcycle}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.pestpressure}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.diseaseincidence}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.croprotation}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.fertilizeruse}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.demandandpricetrends}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{factor.supplychainefficiency}</Text>
               </View>
             </View>
           ))}
@@ -412,7 +482,7 @@ function CropData() {
             onClick={() => updateShowDrawer(record)}
             style={{
               fontSize: '20px',
-              color:"#bfbfbf"
+              color: "#bfbfbf"
             }}
           />
         </Space>
@@ -535,14 +605,14 @@ function CropData() {
 
 
         <PDFDownloadLink
-          document={<MyDocument crops={filterFactors} />}
-          fileName="crop_data.pdf"
+          document={<MyDocument factors={filterFactors} />}
+          fileName="crop_factors.pdf"
         >
           {({ blob, url, loading, error }) =>
             loading ? (
               'Loading document...'
             ) : (
-              <Button type="primary" icon={<DownloadOutlined />} size={size} className="bg-[#bfbfbf] ml-[250px]">
+              <Button type="primary" icon={<DownloadOutlined />} size={size} className="bg-[#bfbfbf]">
                 Download PDF
               </Button>
             )
@@ -577,7 +647,7 @@ function CropData() {
         <Form form={updateForm} layout="vertical" hideRequiredMark>
           <Row gutter={16}>
             <Col span={12}>
-            <Form.Item
+              <Form.Item
                 name="province"
                 label="Province"
                 rules={[
@@ -617,7 +687,7 @@ function CropData() {
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-            <Form.Item
+              <Form.Item
                 name="soiltype"
                 label="Soil Type"
                 rules={[
@@ -641,7 +711,7 @@ function CropData() {
               </Form.Item>
             </Col>
             <Col span={12}>
-            <Form.Item
+              <Form.Item
                 name="soilph"
                 label="Soil PH"
                 rules={[
@@ -661,7 +731,7 @@ function CropData() {
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-            <Form.Item
+              <Form.Item
                 name="nutrientcontent"
                 label="Nutrient Content"
                 rules={[
@@ -737,7 +807,7 @@ function CropData() {
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-            <Form.Item
+              <Form.Item
                 name="humidity"
                 label="Humidity (%)"
                 rules={[
