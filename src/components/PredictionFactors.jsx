@@ -713,6 +713,8 @@ function CropData() {
                   <Option value="Sandy Loam">Sandy Loam</Option>
                   <Option value="Laterite">Laterite</Option>
                   <Option value="Clay Loam">Clay Loam</Option>
+                  <Option value="Red Earth">Red Earth</Option>
+                  <Option value="Reddish Brown Earth">Reddish Brown Earth</Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -747,11 +749,15 @@ function CropData() {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Enter nutrientcontent"
-                  defaultValue={nutrientcontent}
-                  onChange={(e) => setNutrientcontent(e.target.value)}
-                />
+                <Select
+                  placeholder="Select nutrientcontent"
+                  value={nutrientcontent}
+                  onChange={(value) => setNutrientcontent(value)}
+                >
+                  <Option value="Low">Low</Option>
+                  <Option value="Moderate">Moderate</Option>
+                  <Option value="High">High</Option>
+                </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -861,11 +867,17 @@ function CropData() {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Enter topography"
-                  defaultValue={topography}
-                  onChange={(e) => setTopography(e.target.value)}
-                />
+                <Select
+                  placeholder="Select topography"
+                  value={topography}
+                  onChange={(value) => setTopography(value)}
+                >
+                  <Option value="Flat">Flat</Option>
+                  <Option value="Flat to Slightly Undulating">Flat to Slightly Undulating</Option>
+                  <Option value="Hilly">Hilly</Option>
+                  <Option value="Mountainous">Mountainous</Option>
+                  <Option value="Slightly Undulating">Slightly Undulating</Option>
+                </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -899,11 +911,16 @@ function CropData() {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Enter water quality"
-                  defaultValue={waterquality}
-                  onChange={(e) => setWaterquality(e.target.value)}
-                />
+                <Select
+                  placeholder="Select water quality"
+                  value={waterquality}
+                  onChange={(value) => setWaterquality(value)}
+                >
+                  <Option value="Excellent">Excellent</Option>
+                  <Option value="Good">Good</Option>
+                  <Option value="Moderate">Moderate</Option>
+                  <Option value="Low">Low</Option>
+                </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -937,11 +954,15 @@ function CropData() {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Enter growthcycle"
-                  defaultValue={growthcycle}
-                  onChange={(e) => setGrowthcycle(e.target.value)}
-                />
+                <Select
+                  placeholder="Select growthcycle"
+                  value={growthcycle}
+                  onChange={(value) => setGrowthcycle(value)}
+                >
+                  <Option value="Short">Short</Option>
+                  <Option value="Medium">Medium</Option>
+                  <Option value="Long">Long</Option>
+                </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -955,11 +976,15 @@ function CropData() {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Enter pest pressure"
-                  defaultValue={pestpressure}
-                  onChange={(e) => setPestpressure(e.target.value)}
-                />
+                <Select
+                  placeholder="Select pest pressure"
+                  value={pestpressure}
+                  onChange={(value) => setPestpressure(value)}
+                >
+                  <Option value="Low">Low</Option>
+                  <Option value="Medium">Medium</Option>
+                  <Option value="High">High</Option>
+                </Select>
               </Form.Item>
             </Col>
           </Row>
@@ -975,11 +1000,15 @@ function CropData() {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Enter disease incidence"
-                  defaultValue={diseaseincidence}
-                  onChange={(e) => setDiseaseincidence(e.target.value)}
-                />
+                  <Select
+                  placeholder="Select disease incidence"
+                  value={diseaseincidence}
+                  onChange={(value) => setDiseaseincidence(value)}
+                >
+                  <Option value="Low">Low</Option>
+                  <Option value="Medium">Medium</Option>
+                  <Option value="High">High</Option>
+                </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -993,11 +1022,15 @@ function CropData() {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Enter pest crop rotation"
-                  defaultValue={croprotation}
-                  onChange={(e) => setCroprotation(e.target.value)}
-                />
+                <Select
+                  placeholder="Select crop rotation"
+                  value={croprotation}
+                  onChange={(value) => setCroprotation(value)}
+                >
+                  <Option value="Limited">Limited</Option>
+                  <Option value="Continuous">Continuous</Option>
+                  <Option value="Alternate">Alternate</Option>
+                </Select>
               </Form.Item>
             </Col>
           </Row>
@@ -1013,11 +1046,15 @@ function CropData() {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Enter fertilizer use"
-                  defaultValue={fertilizeruse}
-                  onChange={(e) => setFertilizeruse(e.target.value)}
-                />
+                <Select
+                  placeholder="Select fertilizer use"
+                  value={fertilizeruse}
+                  onChange={(value) => setFertilizeruse(value)}
+                >
+                  <Option value="Low">Low</Option>
+                  <Option value="Moderate">Moderate</Option>
+                  <Option value="High">High</Option>
+                </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -1031,11 +1068,15 @@ function CropData() {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Enter pest demand and price trends"
-                  defaultValue={demandandpricetrends}
-                  onChange={(e) => setDemandandpricetrends(e.target.value)}
-                />
+                <Select
+                  placeholder="Select pest demand and price trends"
+                  value={demandandpricetrends}
+                  onChange={(value) => setDemandandpricetrends(value)}
+                >
+                  <Option value="Stable">Stable</Option>
+                  <Option value="Variable">Variable</Option>
+                  <Option value="High">High</Option>
+                </Select>
               </Form.Item>
             </Col>
           </Row>
@@ -1051,11 +1092,15 @@ function CropData() {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Enter supply chain efficiencyion"
-                  defaultValue={supplychainefficiency}
-                  onChange={(e) => setsupplychainefficiencyion(e.target.value)}
-                />
+                <Select
+                  placeholder="Select supply chain efficiencyion"
+                  value={supplychainefficiency}
+                  onChange={(value) => setsupplychainefficiencyion(value)}
+                >
+                  <Option value="Low">Low</Option>
+                  <Option value="Moderate">Moderate</Option>
+                  <Option value="High">High</Option>
+                </Select>
               </Form.Item>
             </Col>
           </Row>
