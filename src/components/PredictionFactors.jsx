@@ -298,7 +298,7 @@ function CropData() {
 
   };
 
-  const handleUpdateCrop = async () => {
+  const handleUpdateCropFactors = async () => {
 
     try {
       // Validate and get the form values
@@ -311,38 +311,44 @@ function CropData() {
       }
 
       // Validation for numeric fields
-      if (isNaN(values.growthduration) || values.growthduration === '') {
-        addWarning('Please enter a valid number for Growth Duration.');
-        return;
-      }
-      if (isNaN(values.averageyield) || values.averageyield === '') {
-        addWarning('Please enter a valid number for Average Yield.');
+      if (isNaN(values.soilph) || values.soilph === '') {
+        addWarning('Please enter a valid number for Soil PH.');
         return;
       }
 
-      const updatedCrop = {
+      const updatedFactors = {
         ...selectedCropFactors,
-        crop: [values.cropimage],
-        cropName: values.cropname,
-        scientificName: values.scientificname,
-        plantingSeason: values.plantingseason,
-        soilType: values.soiltype,
-        growthDuration: parseFloat(values.growthduration),
-        averageYield: parseFloat(values.averageyield),
-        waterRequirements: values.waterrequirements,
-        region: values.region,
-        description: values.description,
+        province: values.province,
+        district: values.district,
+        soiltype: values.soiltype,
+        soilph: parseFloat(values.soilph),
+        nutrientcontent: values.nutrientcontent,
+        temperature: values.temperature,
+        rainfall: values.rainfall,
+        humidity: values.humidity,
+        altitude: values.altitude,
+        topography: values.topography,
+        irrigationsystems: values.irrigationsystems,
+        waterquality: values.waterquality,
+        varietyselection: values.varietyselection,
+        growthcycle: values.growthcycle,
+        pestpressure: values.pestpressure,
+        diseaseincidence: values.diseaseincidence,
+        croprotation: values.croprotation,
+        fertilizeruse: values.fertilizeruse,
+        demandandpricetrends: values.demandandpricetrends,
+        supplychainefficiency: values.supplychainefficiency,
       };
 
       // Send update request to your API
-      const response = await axios.put(`http://localhost:5000/api/crops/editcrop/${selectedCropFactors._id}`, updatedCrop);
-      messageApi.success('Crop updated successfully!').then(() => {
+      const response = await axios.put(`http://localhost:5000/api/cropfactors/editcropfactor/${selectedCropFactors._id}`, updatedFactors);
+      messageApi.success('Crop factors updated successfully!').then(() => {
         window.location.reload();
       });;
       setUpdateOpen(false);
     } catch (error) {
       console.error(error);
-      messageApi.error('Failed to update crop. Please try again.');
+      messageApi.error('Failed to update crop factors. Please try again.');
     }
   };
 
@@ -637,7 +643,7 @@ function CropData() {
         extra={
           <Space>
             <Button onClick={updateOnClose}>Cancel</Button>
-            <Button onClick={handleUpdateCrop} type="primary" className='bg-[#0c6c41]'>
+            <Button onClick={handleUpdateCropFactors} type="primary" className='bg-[#0c6c41]'>
               Update
             </Button>
           </Space>
