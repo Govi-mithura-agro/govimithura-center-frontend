@@ -714,6 +714,8 @@ function CropData() {
                     <Option value="Sandy Loam">Sandy Loam</Option>
                     <Option value="Laterite">Laterite</Option>
                     <Option value="Clay Loam">Clay Loam</Option>
+                    <Option value="Red Earth">Red Earth</Option>
+                    <Option value="Reddish Brown Earth">Reddish Brown Earth</Option>
                   </Select>
                 </Form.Item>
               </Col>
@@ -979,6 +981,8 @@ function CropData() {
                   <Option value="Sandy Loam">Sandy Loam</Option>
                   <Option value="Laterite">Laterite</Option>
                   <Option value="Clay Loam">Clay Loam</Option>
+                  <Option value="Red Earth">Red Earth</Option>
+                  <Option value="Reddish Brown Earth">Reddish Brown Earth</Option>
                 </Select>
               </Form.Item>
             </Col>
