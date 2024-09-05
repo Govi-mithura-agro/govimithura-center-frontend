@@ -668,6 +668,7 @@ function CropData() {
                   defaultValue={province}
                   onChange={(e) => setProvince(e.target.value)}
                   readOnly={true}
+                  disabled={true}
                 />
               </Form.Item>
             </Col>
@@ -687,6 +688,7 @@ function CropData() {
                   defaultValue={district}
                   onChange={(e) => setDistrict(e.target.value)}
                   readOnly={true}
+                  disabled={true}
                 />
               </Form.Item>
             </Col>
