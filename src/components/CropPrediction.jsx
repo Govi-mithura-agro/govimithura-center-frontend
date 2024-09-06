@@ -54,7 +54,7 @@ function CropPrediction() {
   return (
     <div style={{ display: "flex" }}>
       {/* Map Section */}
-      <MapContainer center={[7.8731, 80.7718]} zoom={7} style={{ height: "500px", width: "50%" }}>
+      <MapContainer center={[7.8731, 80.7718]} zoom={7} style={{ height: "540px", width: "50%", borderRadius: "10px", marginLeft: "15px", marginTop: "10px" }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {locations.map((location, index) => (
           <CircleMarker
@@ -79,29 +79,241 @@ function CropPrediction() {
 
       {/* Crop Factor Details Section */}
       <div style={{ width: "50%", padding: "20px" }}>
-        <h3>Crop Factors for {selectedDistrict}</h3>
+        <div className="w-[585px] h-[46px] px-6 mb-3 -mt-5 py-[7px] bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex">
+          <div className="self-stretch justify-start items-start gap-2.5 inline-flex">
+            <div className="grow shrink basis-0 h-[30px] justify-center items-center gap-2.5 flex">
+              <div className="grow shrink basis-0 text-gray-900 text-xl font-semibold font-['Poppins'] leading-[30px]">Crop Factors for <span className="text-[#0c883d]">{selectedDistrict}</span></div>
+            </div>
+          </div>
+        </div>
         {notFound ? (
           <p>Result not found</p>
         ) : cropFactor ? (
           <div>
-            <p><strong>Soil Type:</strong> {cropFactor.soiltype}</p>
-            <p><strong>Soil pH:</strong> {cropFactor.soilph}</p>
-            <p><strong>Nutrient Content:</strong> {cropFactor.nutrientcontent}</p>
-            <p><strong>Temperature:</strong> {cropFactor.temperature} °C</p>
-            <p><strong>Rainfall:</strong> {cropFactor.rainfall} mm</p>
-            <p><strong>Humidity:</strong> {cropFactor.humidity} %</p>
-            <p><strong>Altitude:</strong> {cropFactor.altitude} m</p>
-            <p><strong>Topography:</strong> {cropFactor.topography}</p>
-            <p><strong>Irrigation Systems:</strong> {cropFactor.irrigationsystems}</p>
-            <p><strong>Water Quality:</strong> {cropFactor.waterquality}</p>
-            <p><strong>Variety Selection:</strong> {cropFactor.varietyselection}</p>
-            <p><strong>Growth Cycle:</strong> {cropFactor.growthcycle}</p>
-            <p><strong>Pest Pressure:</strong> {cropFactor.pestpressure}</p>
-            <p><strong>Disease Incidence:</strong> {cropFactor.diseaseincidence}</p>
-            <p><strong>Crop Rotation:</strong> {cropFactor.croprotation}</p>
-            <p><strong>Fertilizer Use:</strong> {cropFactor.fertilizeruse}</p>
-            <p><strong>Demand & Price Trends:</strong> {cropFactor.demandandpricetrends}</p>
-            <p><strong>Supply Chain Efficiency:</strong> {cropFactor.supplychainefficiency}</p>
+            <div className="w-[585px] h-[235px] p-6 bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex">
+              <div className="self-stretch justify-start items-start gap-2.5 inline-flex">
+                <div className="grow shrink basis-0 text-gray-900 text-xl font-semibold font-['Poppins'] leading-[30px]">Soil Properties</div>
+              </div>
+              <div className="self-stretch h-[126px] flex-col justify-start items-start flex">
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Soil Type :</div>
+                    </div>
+                  </div>
+                  <div className="w-80 text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.soiltype}</div>
+                </div>
+                <div className="self-stretch h-[0px] border border-gray-200"></div>
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Soil pH :</div>
+                    </div>
+                  </div>
+                  <div className="w-[326px] text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.soilph}</div>
+                </div>
+                <div className="self-stretch h-[0px] border border-gray-200"></div>
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="self-stretch text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Nutrient Content :</div>
+                    </div>
+                  </div>
+                  <div className="w-[270px] text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.nutrientcontent}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-[585px] h-[235px] p-6 mt-3 bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex">
+              <div className="self-stretch justify-start items-start gap-2.5 inline-flex">
+                <div className="grow shrink basis-0 text-gray-900 text-xl font-semibold font-['Poppins'] leading-[30px]">Weather Conditions</div>
+              </div>
+              <div className="self-stretch h-[126px] flex-col justify-start items-start flex">
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Temperature :</div>
+                    </div>
+                  </div>
+                  <div className="w-80 text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.temperature} °C</div>
+                </div>
+                <div className="self-stretch h-[0px] border border-gray-200"></div>
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Rainfall :</div>
+                    </div>
+                  </div>
+                  <div className="w-[326px] text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.rainfall} mm</div>
+                </div>
+                <div className="self-stretch h-[0px] border border-gray-200"></div>
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="self-stretch text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Humidity :</div>
+                    </div>
+                  </div>
+                  <div className="w-[270px] text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.humidity} %</div>
+                </div>
+              </div>
+            </div>
+
+
+            <div className="w-[610px] h-[235px] p-6 mt-3 bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex relative right-[630px]">
+              <div className="self-stretch justify-start items-start gap-2.5 inline-flex">
+                <div className="grow shrink basis-0 text-gray-900 text-xl font-semibold font-['Poppins'] leading-[30px]">Geographical Factors</div>
+              </div>
+              <div className="self-stretch h-[126px] flex-col justify-start items-start flex">
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Altitude :</div>
+                    </div>
+                  </div>
+                  <div className="w-80 text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.altitude} m</div>
+                </div>
+                <div className="self-stretch h-[0px] border border-gray-200"></div>
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Topography :</div>
+                    </div>
+                  </div>
+                  <div className="w-[326px] text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.topography}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-[585px] h-[235px] p-6 bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex relative bottom-[235px]">
+              <div className="self-stretch justify-start items-start gap-2.5 inline-flex">
+                <div className="grow shrink basis-0 text-gray-900 text-xl font-semibold font-['Poppins'] leading-[30px]">Water Availability</div>
+              </div>
+              <div className="self-stretch h-[126px] flex-col justify-start items-start flex">
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Irrigation Systems :</div>
+                    </div>
+                  </div>
+                  <div className="w-80 text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.irrigationsystems}</div>
+                </div>
+                <br />
+                <div className="self-stretch h-[0px] border border-gray-200"></div>
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Water Quality :</div>
+                    </div>
+                  </div>
+                  <div className="w-[326px] text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.waterquality}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-[610px] h-[235px] p-6 bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex relative right-[630px] bottom-[220px]">
+              <div className="self-stretch justify-start items-start gap-2.5 inline-flex">
+                <div className="grow shrink basis-0 text-gray-900 text-xl font-semibold font-['Poppins'] leading-[30px]">Crop Type</div>
+              </div>
+              <div className="self-stretch h-[126px] flex-col justify-start items-start flex">
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Variety Selection :</div>
+                    </div>
+                  </div>
+                  <div className="w-80 text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.varietyselection}</div>
+                </div>
+                <br />
+                <div className="self-stretch h-[0px] border border-gray-200"></div>
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Growth Cycle :</div>
+                    </div>
+                  </div>
+                  <div className="w-[326px] text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.growthcycle}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-[585px] h-[235px] p-6 bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex relative bottom-[455px]">
+              <div className="self-stretch justify-start items-start gap-2.5 inline-flex">
+                <div className="grow shrink basis-0 text-gray-900 text-xl font-semibold font-['Poppins'] leading-[30px]">Pests and Diseases</div>
+              </div>
+              <div className="self-stretch h-[126px] flex-col justify-start items-start flex">
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Pest Pressure :</div>
+                    </div>
+                  </div>
+                  <div className="w-80 text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.pestpressure}</div>
+                </div>
+                <div className="self-stretch h-[0px] border border-gray-200"></div>
+                <br />
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Disease Incidence :</div>
+                    </div>
+                  </div>
+                  <div className="w-[326px] text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.diseaseincidence}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-[610px] h-[235px] p-6 bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex relative right-[630px] bottom-[440px]">
+              <div className="self-stretch justify-start items-start gap-2.5 inline-flex">
+                <div className="grow shrink basis-0 text-gray-900 text-xl font-semibold font-['Poppins'] leading-[30px]">Farming Practices</div>
+              </div>
+              <div className="self-stretch h-[126px] flex-col justify-start items-start flex">
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Crop Rotation :</div>
+                    </div>
+                  </div>
+                  <div className="w-80 text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.croprotation}</div>
+                </div>
+                <div className="self-stretch h-[0px] border border-gray-200"></div>
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Fertilizer Use :</div>
+                    </div>
+                  </div>
+                  <div className="w-[326px] text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.fertilizeruse}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-[585px] h-[235px] p-6 bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex relative bottom-[675px]">
+              <div className="self-stretch justify-start items-start gap-2.5 inline-flex">
+                <div className="grow shrink basis-0 text-gray-900 text-xl font-semibold font-['Poppins'] leading-[30px]">Market Factors</div>
+              </div>
+              <div className="self-stretch h-[126px] flex-col justify-start items-start flex">
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Demand and Price Trends :</div>
+                    </div>
+                  </div>
+                  <div className="w-80 text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.demandandpricetrends}</div>
+                </div>
+                <br />
+                <div className="self-stretch h-[0px] border border-gray-200"></div>
+                <br />
+                <div className="self-stretch py-[9px] justify-start items-center inline-flex">
+                  <div className="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                      <div className="w-[136.44px] text-gray-900 text-base font-semibold font-['Poppins'] leading-normal">Supply Chain Efficiency :</div>
+                    </div>
+                  </div>
+                  <div className="w-[326px] text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.supplychainefficiency}</div>
+                </div>
+              </div>
+            </div>
+
           </div>
         ) : (
           <p>Loading crop factors...</p>
