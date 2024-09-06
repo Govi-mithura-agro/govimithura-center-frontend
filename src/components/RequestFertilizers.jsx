@@ -1,8 +1,141 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Space, Table, Modal, Input, Button,Menu,Dropdown,message,Popconfirm } from 'antd';
+
+
+
+
+
+
 
 function RequestFertilizers() {
+
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [fertilizerName, setfertilizerName] = useState([]);
+  const [ requestDate, setrequestDate] = useState("");
+  const [wantedDate, setwantedDate] = useState("");
+  const [quantity, setquantity] = useState("");
+  const [description, setdescription] = useState("");
+
+
+  const showLoading = () => {
+    setOpen(true);
+    setLoading(true);
+
+    // Simple loading mock. You should add cleanup logic in real world.
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  };
+
+
+  const requestFertilizer = async (event) => {
+    event.preventDefault();
+    // Get current date and time
+    const currentDateTime = new Date().toISOString(); // You can format this as needed
+
+    const request = {
+      fertilizerName,
+      requestDate: currentDateTime, // Set current date as request date
+      wantedDate,
+      quantity,
+      description,
+    };
+
+    try {
+      const result = await axios.post("http://localhost:5000/api/fertilizers/requesrFertilizer", request);
+      console.log(result.data);
+
+      message.success('Fertilizer request send successfully!').then(() => {
+        window.location.reload();
+      });
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
   return (
     <div >
+
+<Modal
+        title={<p>Request Fertilizer</p>}
+        footer={
+          null
+        }
+        loading={loading}
+        open={open}
+        onCancel={() => setOpen(false)}
+      >
+         <form onSubmit={requestFertilizer} className="max-w-md mx-auto">
+            {/* Warehouse Name Input */}
+            <div className="relative z-0 w-full mb-5 group mt-2">
+              <input
+                type="text"
+                value={fertilizerName}
+                onChange={(e) => setfertilizerName(e.target.value)}
+                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                placeholder=""
+                required
+              />
+             
+
+              <label className="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-0 peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Fertilizer name</label>
+            </div>
+            {/* Capacity Input */}
+           
+            <div className="relative z-0 w-full mb-5 group mt-2">
+              <input
+                type="date"
+                value={wantedDate}
+                onChange={(e) => setwantedDate(e.target.value)}
+                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                placeholder=""
+                required
+              />
+             
+
+              <label className="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-0 peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Wanted date</label>
+            </div>
+            <div className="relative z-0 w-full mb-5 group mt-2">
+              <input
+                type="number"
+                value={quantity}
+               
+                onChange={(e) => {
+    const value = e.target.value;
+    // Allow only numeric input and handle invalid cases
+    if (/^\d*$/.test(value)) {
+      setquantity(value);
+    }
+  }}
+                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                placeholder=""
+                required
+              />
+             
+             <label className="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-0 peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Quentity (Kg)</label>
+
+            </div>
+            <div className="relative z-0 w-full mb-5 group">
+<div className="w-full mt-1"><h1 className="">Description</h1></div>
+            <textarea 
+  type="tect"
+  value={description}
+  onChange={(e) => setdescription(e.target.value)}
+   id="message" rows="4" class="block p-2.5 mt-2 w-full text-sm  text-gray-500 bg-gray-50 rounded-lg border border-gray-300  dark:bg-white dark:border-gray-600 dark:placeholder-gray-400 dark:text-black  " placeholder="Leave a comment..."></textarea>
+
+            </div>
+            <button
+              type="submit"
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+            >
+              send
+            </button>
+          </form>
+      </Modal>
+      
       <div className="flex justify-between mr-3 ml-3 ">
         <div className="w-[253px] h-[138px] pl-5 pr-3 py-3 bg-[#54b435]/20 rounded-[11px] border flex flex-col justify-center items-center gap-4 mt-5">
           <div className="text-black/20 text-lg font-medium font-['Poppins'] leading-7">Approved</div>
@@ -31,7 +164,7 @@ function RequestFertilizers() {
           <button className="text-sm text-blue-500">PDF</button>
         </div>
         <div className="w-[90px] h-[35px] bg-[#0c6c41] rounded flex justify-center items-center">
-          <button className="text-white text-sm font-normal font-['Lexend']">
+          <button onClick={() => showLoading()} className="text-white text-sm font-normal font-['Lexend']">
             Request
           </button>
         </div>
