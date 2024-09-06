@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
+import { NotFoundImage } from "../assets";
 function CropPrediction() {
 
   const [locations, setLocations] = useState([]);
@@ -87,7 +88,9 @@ function CropPrediction() {
           </div>
         </div>
         {notFound ? (
-          <p>Result not found</p>
+          <div className="flex justify-center items-center gap-5">
+            <img src={NotFoundImage} alt="Not Found"/>
+          </div>      
         ) : cropFactor ? (
           <div>
             <div className="w-[585px] h-[235px] p-6 bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex">
@@ -310,6 +313,14 @@ function CropPrediction() {
                     </div>
                   </div>
                   <div className="w-[326px] text-right text-gray-900 text-base font-normal font-['Poppins'] leading-normal">{cropFactor.supplychainefficiency}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-[1214px] h-[46px] px-6 py-[7px] bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex relative right-[630px] bottom-[650px]">
+              <div className="self-stretch justify-start items-start gap-2.5 inline-flex">
+                <div className="grow shrink basis-0 h-[30px] justify-center items-center gap-2.5 flex">
+                  <div className="grow shrink basis-0 text-gray-900 text-xl font-semibold font-['Poppins'] leading-[30px]">Suitable Crops for <span className="text-[#0c883d]">{selectedDistrict}</span></div>
                 </div>
               </div>
             </div>
