@@ -440,7 +440,7 @@ function CropPrediction() {
         {/* Crop Data Section */}
         {cropFactor && crops && crops.length > 0 ? (
           <>
-            <div className="p-4 m-4 bg-white rounded-xl">
+            <div className=" bg-white rounded-xl relative right-[635px] bottom-[635px]" style={{ width: "1220px" }}>
               <Table
                 columns={columns}
                 dataSource={crops}
