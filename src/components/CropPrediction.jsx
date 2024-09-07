@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import { NotFoundImage } from "../assets";
-import { Button, Popconfirm, Space, Spin, Table } from 'antd';
+import { Button, Modal, Popconfirm, Space, Spin, Table } from 'antd';
 import { Color } from "antd/es/color-picker";
 
 const contentStyle = {
@@ -20,6 +20,31 @@ function CropPrediction() {
   const [selectedDistrict, setSelectedDistrict] = useState("Colombo"); // Default to Colombo
   const [selectedProvince, setSelectedProvince] = useState("Western"); // Default to Western
   const [notFound, setNotFound] = useState(false); // State to track if crop factors are not found
+
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [modalText, setModalText] = useState('Content of the modal');
+
+  const [selectedCrop, setSelectedCrop] = useState(null);
+  
+  const showModal = (crop) => {
+    setOpen(true);
+    setSelectedCrop(crop);
+  };
+
+  const handleOk = () => {
+    setModalText('The modal will be closed after two seconds');
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpen(false);
+      setConfirmLoading(false);
+    }, 2000);
+  };
+
+  const handleCancel = () => {
+    console.log('Clicked cancel button');
+    setOpen(false);
+  };
 
   const columns = [
     {
@@ -95,7 +120,7 @@ function CropPrediction() {
       key: 'see more',
       render: (_, record) => (
         <Space size="middle">
-          <Button type="text" className='text-[#767676]' >See more...</Button>
+          <Button type="text" className='text-[#767676]' onClick={() => showModal(record)}>See more...</Button>
         </Space>
       ),
     },
@@ -448,6 +473,30 @@ function CropPrediction() {
                 pagination={{ pageSize: 10 }}
               />
             </div>
+            <Modal
+              title="Crop Details"
+              open={open}
+              onOk={handleOk}
+              confirmLoading={confirmLoading}
+              onCancel={handleCancel}
+            >
+              {selectedCrop && (
+                <div className="w-[587px] h-[730px] relative">
+                  <div className="left-[20px] top-[270px] absolute">
+                    <span style={{ color: 'black', fontSize: '1.125rem', fontWeight: 'normal', fontFamily: 'Poppins', lineHeight: '1.5' }}>
+                      Crop name:&nbsp;
+                    </span>
+                    <span style={{ color: '#817402', fontSize: '1.125rem', fontWeight: 'normal', fontFamily: 'Poppins', lineHeight: '1.5' }}>
+                      {selectedCrop.cropName}
+                    </span>
+                  </div>
+                  <img className="w-[193px] h-[193px] left-[25%] top-[30px] absolute" src={selectedCrop.crop[0] || "https://via.placeholder.com/193x193"} alt={selectedCrop.cropName} />
+                  <div className="w-[430px] h-[364px] left-[20px] top-[320px] absolute text-justify text-black text-base font-normal font-['Poppins'] leading-snug" style={{ fontSize: "12px" }}>
+                    {selectedCrop.description || "No description available."}
+                  </div>
+                </div>
+              )}
+            </Modal>
           </>
         ) : (
           <></>
