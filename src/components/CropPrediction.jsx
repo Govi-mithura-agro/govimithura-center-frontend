@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import { NotFoundImage } from "../assets";
-import { Spin } from 'antd';
+import { Button, Popconfirm, Space, Spin, Table } from 'antd';
 import { Color } from "antd/es/color-picker";
 
 const contentStyle = {
@@ -20,6 +20,86 @@ function CropPrediction() {
   const [selectedDistrict, setSelectedDistrict] = useState("Colombo"); // Default to Colombo
   const [selectedProvince, setSelectedProvince] = useState("Western"); // Default to Western
   const [notFound, setNotFound] = useState(false); // State to track if crop factors are not found
+
+  const columns = [
+    {
+      title: 'Crop',
+      dataIndex: 'crop',
+      key: 'crop',
+      render: (images) => (
+        <div>
+          {images.map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={`Crop ${index + 1}`}
+              className="w-10 h-10 mr-3"
+            />
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Crop Name',
+      dataIndex: 'cropName',
+      key: 'cropName',
+      className: 'px-4', // Additional padding for spacing
+    },
+    {
+      title: 'Scientific Name',
+      dataIndex: 'scientificName',
+      key: 'scientificName',
+      className: 'px-4',
+    },
+    {
+      title: 'Planting Season',
+      dataIndex: 'plantingSeason',
+      key: 'plantingSeason',
+      className: 'px-4',
+    },
+    {
+      title: 'Soil Type',
+      dataIndex: 'soilType',
+      key: 'soilType',
+      className: 'px-4',
+    },
+    {
+      title: 'Growth Duration (days)',
+      dataIndex: 'growthDuration',
+      key: 'growthDuration',
+      className: 'px-4',
+      render: (text) => `${text}`,
+    },
+    {
+      title: 'Average Yield (tons/ha)',
+      dataIndex: 'averageYield',
+      key: 'averageYield',
+      className: 'px-4',
+      render: (text) => `${text}`,
+    },
+    {
+      title: 'Water Requirements',
+      dataIndex: 'waterRequirements',
+      key: 'waterRequirements',
+      className: 'px-4',
+    },
+    {
+      title: 'Region',
+      dataIndex: 'region',
+      key: 'region',
+      className: 'px-4',
+      render: (regions) => regions.join(', '),
+    },
+    {
+      title: '',
+      key: 'see more',
+      render: (_, record) => (
+        <Space size="middle">
+          <Button type="text" className='text-[#767676]' >See more...</Button>
+        </Space>
+      ),
+    },
+  ];
 
 
   useEffect(() => {
@@ -359,18 +439,16 @@ function CropPrediction() {
         </div>
         {/* Crop Data Section */}
         {cropFactor && crops && crops.length > 0 ? (
-          <div className="mt-4">
-            <h3 className="font-semibold">Crop Data for {selectedProvince}</h3>
-            <div className="w-[585px] p-6 bg-white rounded-[9px] flex-col justify-start items-start gap-4 inline-flex">
-              <ul>
-                {crops.map((crop, index) => (
-                  <li key={index}>
-                    <strong>{crop.name}</strong> - {crop.description}
-                  </li>
-                ))}
-              </ul>
+          <>
+            <div className="p-4 m-4 bg-white rounded-xl">
+              <Table
+                columns={columns}
+                dataSource={crops}
+                scroll={{ x: 1500 }}
+                pagination={{ pageSize: 10 }}
+              />
             </div>
-          </div>
+          </>
         ) : (
           <></>
         )}
