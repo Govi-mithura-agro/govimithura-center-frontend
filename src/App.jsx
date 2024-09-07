@@ -15,6 +15,7 @@ import AllAppoinemnts from "./components/AllAppoinemnts";
 import DashBoard from "./components/DashBoard";
 import PointAddingWeb from "./components/PointAddingWeb/PointAddingWeb";
 import ResizeMap from "./components/ResizeMap/ResizeMap";
+import 'leaflet/dist/leaflet.css';
 
 function App() {
   return (

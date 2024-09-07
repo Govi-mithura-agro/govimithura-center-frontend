@@ -469,7 +469,7 @@ function CropData() {
             okText="Yes"
             cancelText="No"
           >
-            <Button size="large" className='bg-red-600 text-white'>Delete</Button>
+            <Button size="large" className='text-white bg-red-600'>Delete</Button>
           </Popconfirm>
         </Space>
       ),
@@ -714,6 +714,8 @@ function CropData() {
                     <Option value="Sandy Loam">Sandy Loam</Option>
                     <Option value="Laterite">Laterite</Option>
                     <Option value="Clay Loam">Clay Loam</Option>
+                    <Option value="Red Earth">Red Earth</Option>
+                    <Option value="Reddish Brown Earth">Reddish Brown Earth</Option>
                   </Select>
                 </Form.Item>
               </Col>
@@ -828,7 +830,7 @@ function CropData() {
           </Form>
         </Drawer>
       </div>
-      <div className="m-4 bg-white rounded-xl p-4">
+      <div className="bg-white rounded-xl">
         <Table
           columns={columns}
           dataSource={filteredCrops} // Use filteredCrops instead of crops
@@ -979,6 +981,8 @@ function CropData() {
                   <Option value="Sandy Loam">Sandy Loam</Option>
                   <Option value="Laterite">Laterite</Option>
                   <Option value="Clay Loam">Clay Loam</Option>
+                  <Option value="Red Earth">Red Earth</Option>
+                  <Option value="Reddish Brown Earth">Reddish Brown Earth</Option>
                 </Select>
               </Form.Item>
             </Col>
