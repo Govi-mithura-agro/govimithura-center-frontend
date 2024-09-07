@@ -469,7 +469,7 @@ function CropData() {
             okText="Yes"
             cancelText="No"
           >
-            <Button size="large" className='bg-red-600 text-white'>Delete</Button>
+            <Button size="large" className='text-white bg-red-600'>Delete</Button>
           </Popconfirm>
         </Space>
       ),
@@ -830,7 +830,7 @@ function CropData() {
           </Form>
         </Drawer>
       </div>
-      <div className="m-4 bg-white rounded-xl p-4">
+      <div className="bg-white rounded-xl">
         <Table
           columns={columns}
           dataSource={filteredCrops} // Use filteredCrops instead of crops
