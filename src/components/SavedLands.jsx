@@ -3,7 +3,20 @@ import "../styles/Cardhome.css";
 import Card from "./Card";
 import { FaSearch } from "react-icons/fa";
 import axios from "axios";
-import { message, Empty, Modal, Button, Spin } from "antd";
+import {
+  message,
+  Empty,
+  Modal,
+  Button,
+  Spin,
+  Drawer,
+  Space,
+  Form,
+  Input,
+  Select,
+} from "antd";
+
+const { Option } = Select;
 
 const SavedTemplatesWeb = ({
   onBackToSidebar,
@@ -15,6 +28,20 @@ const SavedTemplatesWeb = ({
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [mapDetailToDelete, setMapDetailToDelete] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [confirmLoadingUpdate, setConfirmLoadingUpdate] = useState(false);
+  const [updateOpen, setUpdateOpen] = useState(false);
+  const [selectedMapDetail, setSelectedMapDetail] = useState(null); // Store the selected map detail for update
+  const [form] = Form.useForm(); // Ant Design form instance
+
+  const updateOnClose = () => {
+    setUpdateOpen(false);
+    setSelectedMapDetail(null); // Clear selected map detail
+  };
+
+  const handleUpdateCancel = () => {
+    setUpdateOpen(false);
+    setSelectedMapDetail(null); // Clear selected map detail
+  };
 
   const getAllMapDetails = async () => {
     try {
@@ -40,8 +67,9 @@ const SavedTemplatesWeb = ({
     if (mapDetailToDelete) {
       axios
         .delete(
-          `http://localhost:5000/api/map/deleteMapDetail/${mapDetailToDelete._id}`
+          `http://localhost:5000/api/mapTemplate/deleteTemplate/${mapDetailToDelete._id}`
         )
+
         .then(() => {
           message.success("Map detail deleted successfully");
           setMapDetails(
@@ -60,6 +88,43 @@ const SavedTemplatesWeb = ({
   const handleDeleteCancel = () => {
     setDeleteModalVisible(false);
     setMapDetailToDelete(null);
+  };
+
+  const handleUpdateClick = (mapDetail) => {
+    setSelectedMapDetail(mapDetail);
+    form.setFieldsValue(mapDetail); // Set form values to the selected map detail
+    setUpdateOpen(true);
+  };
+
+  const handleUpdateOk = async () => {
+    try {
+      setConfirmLoadingUpdate(true);
+      const updatedDetails = form.getFieldsValue(); // Get updated form values
+
+      console.log("Updating with details:", updatedDetails);
+
+      const response = await axios.put(
+        `http://localhost:5000/api/mapTemplate/updateTemplate/${selectedMapDetail._id}`,
+        updatedDetails
+      );
+
+      console.log("Server Response:", response.data);
+
+      message.success("Map detail updated successfully");
+      const updatedMapDetails = mapDetails.map((detail) =>
+        detail._id === selectedMapDetail._id
+          ? { ...detail, ...updatedDetails }
+          : detail
+      );
+      setMapDetails(updatedMapDetails);
+      setUpdateOpen(false);
+      setSelectedMapDetail(null);
+    } catch (error) {
+      console.error("Failed to update map detail:", error);
+      message.error("Failed to update map detail");
+    } finally {
+      setConfirmLoadingUpdate(false);
+    }
   };
 
   useEffect(() => {
@@ -113,7 +178,7 @@ const SavedTemplatesWeb = ({
                       landType={detail.landType}
                       onClick={() => onCardClick(detail)}
                       onDelete={() => showDeleteConfirm(detail)}
-                      onEdit={() => handleEditTemplateClick(detail)}
+                      onEdit={() => handleUpdateClick(detail)} // Use handleUpdateClick
                     />
                   ))
                 ) : (
@@ -127,6 +192,82 @@ const SavedTemplatesWeb = ({
           </div>
         </div>
       </div>
+
+      <Drawer
+        title="Update Map Details"
+        width={720}
+        onClose={updateOnClose}
+        open={updateOpen}
+        extra={
+          <Space>
+            <Button onClick={handleUpdateCancel}>Cancel</Button>
+            <Button
+              onClick={handleUpdateOk}
+              type="primary"
+              loading={confirmLoadingUpdate}
+              className="bg-[#0c6c41]"
+            >
+              Update
+            </Button>
+          </Space>
+        }
+      >
+        <Form form={form} layout="vertical" name="update_map_details">
+          <Form.Item
+            name="templateName"
+            label="Template Name"
+            rules={[
+              { required: true, message: "Please enter the template name" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="location"
+            label="Location"
+            rules={[{ required: true, message: "Please enter the location" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="date"
+            label="Date"
+            rules={[{ required: true, message: "Please enter the date" }]}
+          >
+            <Input type="date" />
+          </Form.Item>
+
+          <Form.Item
+            name="imageUrl"
+            label="Image URL"
+            rules={[{ required: true, message: "Please enter the image URL" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="description"
+            label="Description"
+            rules={[{ required: true, message: "Please enter a description" }]}
+          >
+            <Input.TextArea rows={4} />
+          </Form.Item>
+
+          <Form.Item
+            name="landType"
+            label="Land Type"
+            rules={[{ required: true, message: "Please select the land type" }]}
+          >
+            <Select placeholder="Select Land Type">
+              <Option value="Residential">Residential</Option>
+              <Option value="Commercial">Commercial</Option>
+              <Option value="Industrial">Industrial</Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Drawer>
 
       <Modal
         title="Confirm Delete"
