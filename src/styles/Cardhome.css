@@ -10,7 +10,7 @@
 @media (min-width: 768px) {
   .card-container {
     width: 380px; /* Increase the width */
-    height: 130px;
+    height: 180px;
   }
 }
 
@@ -37,8 +37,8 @@
 
 .image-loader {
   position: absolute;
-  width: 4rem;
-  height: 4rem;
+  width: 5rem;
+  height: 5rem;
   border: 3px solid #f3f3f3;
   border-top: 3px solid #3498db;
   border-radius: 50%;
@@ -54,8 +54,8 @@
 }
 
 .card-image {
-  width: 5rem;
-  height: 5rem;
+  width: 6rem;
+  height: 6rem;
   object-fit: cover;
   margin-top: 10px;
   opacity: 0;
