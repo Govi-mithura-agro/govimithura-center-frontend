@@ -4,10 +4,6 @@ import { Space, Table, Modal, Input, Button,Menu,Dropdown,message,Popconfirm } f
 
 
 
-
-
-
-
 function RequestFertilizers() {
 
   const [open, setOpen] = useState(false);
@@ -137,21 +133,21 @@ function RequestFertilizers() {
       </Modal>
       
       <div className="flex justify-between mr-3 ml-3 ">
-        <div className="w-[253px] h-[138px] pl-5 pr-3 py-3 bg-[#54b435]/20 rounded-[11px] border flex flex-col justify-center items-center gap-4 mt-5">
-          <div className="text-black/20 text-lg font-medium font-['Poppins'] leading-7">Approved</div>
-          <div className="text-black/20 text-4xl font-medium font-['Poppins'] leading-7">100</div>
+        <div className="w-[253px] h-[138px] pl-5 pr-3 py-3 bg-[#54b435]/80 rounded-[11px] border flex flex-col justify-center items-center gap-4 mt-5">
+          <div className="text-black text-lg font-medium font-['Poppins'] leading-7">Approved</div>
+          <div className="text-black text-4xl font-medium font-['Poppins'] leading-7">100</div>
         </div>
-        <div className="w-[266px] h-[138px] pl-5 pr-3 py-3 bg-[#82cd47]/30 rounded-[11px] border flex flex-col justify-center items-center gap-4 mt-5">
-          <div className="text-black/20 text-lg font-medium font-['Poppins'] leading-7">Pending</div>
-          <div className="text-black/20 text-4xl font-medium font-['Poppins'] leading-7">100</div>
+        <div className="w-[266px] h-[138px] pl-5 pr-3 py-3 bg-[#82cd47]/80 rounded-[11px] border flex flex-col justify-center items-center gap-4 mt-5">
+          <div className="text-black text-lg font-medium font-['Poppins'] leading-7">Pending</div>
+          <div className="text-black text-4xl font-medium font-['Poppins'] leading-7">100</div>
         </div>
-        <div className="w-[260px] h-[138px] pl-5 pr-3 py-3 bg-[#f0ff42]/20 rounded-[11px] border flex flex-col justify-center items-center gap-4 mt-5">
-          <div className="text-black/20 text-lg font-medium font-['Poppins'] leading-7">Rejected</div>
-          <div className="text-black/20 text-4xl font-medium font-['Poppins'] leading-7">100</div>
+        <div className="w-[260px] h-[138px] pl-5 pr-3 py-3 bg-[#f0ff42]/80 rounded-[11px] border flex flex-col justify-center items-center gap-4 mt-5">
+          <div className="text-black text-lg font-medium font-['Poppins'] leading-7">Rejected</div>
+          <div className="text-black text-4xl font-medium font-['Poppins'] leading-7">100</div>
         </div>
-        <div className="w-[260px] h-[130px] pl-5 pr-3 py-3 bg-[#82cd47]/20 rounded-[11px] border flex flex-col justify-center items-center gap-4 mt-5">
-          <div className="text-black/20 text-lg font-medium font-['Poppins'] leading-7">Rejected</div>
-          <div className="text-black/20 text-4xl font-medium font-['Poppins'] leading-7">100</div>
+        <div className="w-[260px] h-[130px] pl-5 pr-3 py-3 bg-[#82cd47]/80 rounded-[11px] border flex flex-col justify-center items-center gap-4 mt-5">
+          <div className="text-black text-lg font-medium font-['Poppins'] leading-7">Rejected</div>
+          <div className="text-black text-4xl font-medium font-['Poppins'] leading-7">100</div>
         </div>
       </div>
 

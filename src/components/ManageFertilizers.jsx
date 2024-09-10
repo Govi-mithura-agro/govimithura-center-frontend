@@ -1,6 +1,109 @@
 import React from 'react';
+import { Icon } from '@iconify/react';
+import { Space, Table, Modal, Input, Tag,Menu,Dropdown,message,Popconfirm } from 'antd';
 
 function ManageFertilizers() {
+
+
+  const columns = [
+    {
+      title: "Fertilizer",
+      dataIndex: "fertilizer",
+      key: "fertilizer",
+    },
+    {
+      title: "Last Updated",
+      dataIndex: "lastUpdated",
+      key: "lastUpdated",
+    },
+    {
+      title: "Amount(Kg)",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => {
+        let color = "";
+        switch (status) {
+          case "low stock":
+            color = "gold";
+            break;
+          case "out of stock":
+            color = "red";
+            break;
+          case "completed":
+            color = "green";
+            break;
+          default:
+            color = "blue";
+        }
+        return (
+          <Tag color={color} key={status}>
+            {status.toUpperCase()}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: <div className="text-center">Action</div>,
+      key: 'action',
+      render: (_, record) => (
+        <Space size="middle" className="flex justify-center">
+          <button  className="ml-4">
+            <Icon icon="lucide:edit" className="text-green-500 text-2xl" />
+      
+          </button>
+          <Popconfirm
+    title="Delete the warehouse"
+    description="Are you sure to delete this warehouse?"
+    okText="Yes"
+    cancelText="No"
+    
+  >
+   <button className="ml-4">
+            <Icon icon="streamline:recycle-bin-2" className="text-red-500 text-2xl" />
+          </button>
+  </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
+  const data = [
+    {
+      key: "1",
+      fertilizer: "Payment from Bonnie Green",
+      lastUpdated: "Apr 23, 2024",
+      amount: 14,
+      status: "low stock",
+    },
+    {
+      key: "2",
+      fertilizer: "Payment refund to Micheal Gough",
+      lastUpdated: "Apr 23, 2024",
+      amount: 0,
+      status: "out of stock",
+    },
+    {
+      key: "3",
+      fertilizer: "Payment failed from Bonnie Green",
+      lastUpdated: "Apr 18, 2024",
+      amount: 0,
+      status: "out of stock",
+    },
+    {
+      key: "4",
+      fertilizer: "Payment from Bonnie Green",
+      lastUpdated: "Apr 15, 2024",
+      amount: 2,
+      status: "low stock",
+    },
+   
+  ];
+
   return (
     <div >
    <div className='flex mt'></div>
@@ -63,9 +166,11 @@ function ManageFertilizers() {
         </div>
         <div className="absolute right-0 top-0 w-[190.23px] h-[30px] p-4 bg-white rounded-[5px] flex justify-center items-center mr-[10px]">
           <div className="w-[126px] flex justify-center items-center gap-[5px]">
-            <div className="text-right text-indigo-600 text-xs font-medium font-['Plus Jakarta Sans'] leading-[21px]">
-              See All Pending
-            </div>
+          <div className="w-[90px] h-[35px] bg-[#0c6c41] rounded flex justify-center items-center">
+          <button className="text-white text-sm font-normal font-['Lexend']">
+           Add Fertilizer
+          </button>
+        </div>
             <div className="w-3.5 h-3.5 flex justify-end items-center">
               <div className="w-[11px] h-[11px] relative">
                 {/* Placeholder for icon or additional content */}
@@ -77,36 +182,7 @@ function ManageFertilizers() {
     </div>
 
     <div className="mt-5 mr-3 ml-4">
-      <table className="min-w-full bg-slate-100 border-t border-b border-slate-200 mr-4">
-        <thead>
-          <tr>
-            <th className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Type</th>
-            <th className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Requested Date</th>
-            <th className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">From Date</th>
-            <th className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Status</th>
-            <th className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Description</th>
-            <th className="text-left text-slate-900 text-base font-normal font-['Inter'] p-3">Quantity (Kg)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Type</td>
-            <td className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Requested Date</td>
-            <td className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">From Date</td>
-            <td className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Status</td>
-            <td className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Description</td>
-            <td className="text-left text-slate-900 text-base font-normal font-['Inter'] p-3">Quantity (Kg)</td>
-          </tr>
-          <tr>
-            <td className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Type</td>
-            <td className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Requested Date</td>
-            <td className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">From Date</td>
-            <td className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Status</td>
-            <td className="text-left text-slate-800 text-sm font-medium font-['Inter'] p-3">Description</td>
-            <td className="text-left text-slate-900 text-base font-normal font-['Inter'] p-3">Quantity (Kg)</td>
-          </tr>
-        </tbody>
-      </table>
+    <Table columns={columns} dataSource={data} pagination={false} />
     </div>
     <br></br>
     </div>
