@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../styles/Cardhome.css";
 import Card from "./Card";
 import { FaSearch } from "react-icons/fa";
 import axios from "axios";
@@ -15,13 +14,14 @@ import {
   Input,
   Select,
   Steps,
+  Typography,
   Table,
 } from "antd";
 
 const { Option } = Select;
 const { Step } = Steps;
 
-const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate }) => {
+const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
   const [mapDetails, setMapDetails] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -41,23 +41,45 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate }) => {
   const [selectedMap, setSelectedMap] = useState(null);
   const [fertilizerCalculations, setFertilizerCalculations] = useState([]);
   const [isResultModalVisible, setIsResultModalVisible] = useState(false);
+  const [canCalculate, setCanCalculate] = useState(false);
+  const { Text } = Typography;
 
   const columns = [
     {
       title: "Fertilizer Name",
       dataIndex: "name",
       key: "name",
+      sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
       title: "Soil Type",
       dataIndex: "soilType",
       key: "soilType",
+      filters: [
+        { text: "Sandy", value: "Sandy" },
+        { text: "Loamy", value: "Loamy" },
+        { text: "Clay", value: "Clay" },
+      ],
+      onFilter: (value, record) => record.soilType === value,
     },
     {
-      title: "Total Amount Needed (kg)",
+      title: "Total Amount Needed (Kg)",
       dataIndex: "totalAmountNeeded",
       key: "totalAmountNeeded",
-      render: (text) => `${text.toFixed(2)} kg`, // Formats the value to 2 decimal places
+      sorter: (a, b) => a.totalAmountNeeded - b.totalAmountNeeded,
+      render: (text) => <Text strong>{parseFloat(text).toFixed(2)}</Text>,
+    },
+    {
+      title: "Application Rate (Kg/ha)",
+      dataIndex: "applicationRate",
+      key: "applicationRate",
+      render: (_, record) => (
+        <Text>
+          {(parseFloat(record.totalAmountNeeded) / (landSize / 10000)).toFixed(
+            2
+          )}
+        </Text>
+      ),
     },
   ];
 
@@ -83,23 +105,32 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate }) => {
   }, []);
 
   const handleNextStep = () => {
-    setCurrentStep((prev) => prev + 1);
+    form
+      .validateFields()
+      .then(() => {
+        setCurrentStep(currentStep + 1);
+        if (currentStep === 1) {
+          setCanCalculate(true);
+        }
+      })
+      .catch((error) => {
+        console.error("Validation failed:", error);
+      });
   };
 
   const handlePrevStep = () => {
-    setCurrentStep((prev) => prev - 1);
+    setCurrentStep(currentStep - 1);
+    if (currentStep === 2) {
+      setCanCalculate(false);
+    }
   };
 
-  const canCalculate = currentStep === 2 && fertilizerAmount;
   const isStepValid = (step) => {
-    if (step === 0) {
-      return form.getFieldValue("cropType") && form.getFieldValue("soilType");
-    } else if (step === 1) {
-      return (
-        form.getFieldValue("landSize") && form.getFieldValue("expectedYield")
-      );
-    }
-    return true; // Step 2, no additional validation required
+    const fields =
+      step === 0 ? ["cropType", "soilType"] : ["landSize", "expectedYield"];
+    return form
+      .getFieldsError(fields)
+      .every(({ errors }) => errors.length === 0);
   };
 
   const updateOnClose = () => {
@@ -112,6 +143,21 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate }) => {
     form.setFieldsValue({ landSize: detail.area }); // Set land size for calculation based on the selected map
     setIsModalVisible(true); // Show modal
   };
+
+  useEffect(() => {
+    if (!isModalVisible) {
+      form.resetFields();
+      setCurrentStep(0);
+      setFertilizerCalculations([...fertilizerCalculations]);
+      setCanCalculate(false);
+    }
+  }, [fertilizerCalculations, currentStep]);
+
+  useEffect(() => {
+    if (fertilizerCalculations.length > 0) {
+      setIsResultModalVisible(true);
+    }
+  }, [fertilizerCalculations]);
 
   // Function to fetch fertilizer  based on crops
   useEffect(() => {
@@ -141,78 +187,88 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate }) => {
       .validateFields()
       .then((values) => {
         const { cropType, soilType, expectedYield, landSize } = values;
-  
-        // Debug: Check the selected crop type
-        console.log("Selected Crop Type:", cropType);
-        console.log("Selected Soil Type:", soilType);
-        console.log("Land Size (ha):", landSize);
-        console.log("Expected Yield (tons):", expectedYield);
-  
-        // Filter fertilizers by cropType and soilType
+
+        console.log("Input values:", {
+          cropType,
+          soilType,
+          expectedYield,
+          landSize,
+        });
+
+        // Convert landSize from square meters to hectares
+        const landSizeHa = landSize / 10000;
+
         const relevantFertilizers = fertilizers.filter((fertilizer) => {
-          // Split the crops string by commas and trim spaces
           const cropNames = fertilizer.crops[0]
-            .split(',')
+            .split(",")
             .map((crop) => crop.trim().toLowerCase());
-  
-          // Check if the cropType matches any of the crop names and soilType matches
           return cropNames.includes(cropType.toLowerCase());
         });
-  
-        // If no fertilizers match the crop
+
         if (relevantFertilizers.length === 0) {
-          console.error("No fertilizers found for the selected crop and soil type.");
+          console.error(
+            "No fertilizers found for the selected crop and soil type."
+          );
+          message.error(
+            "No suitable fertilizers found for the selected criteria."
+          );
           return;
         }
-  
-        // Debug: Log the found fertilizers
+
         console.log("Relevant Fertilizers:", relevantFertilizers);
-  
-        // Get the average yield for the selected crop
+
         const selectedCropData = cropOptions.find(
           (crop) => crop.cropName === cropType
         );
-  
+
         if (!selectedCropData) {
           console.error("Crop data not found.");
+          message.error("Selected crop data not found. Please try again.");
           return;
         }
-  
+
         const averageYield = selectedCropData.averageYield;
-  
-        // Calculate required fertilizer amounts for each fertilizer
+
+        const soilTypeFactor = {
+          Sandy: 1.2,
+          Loamy: 1.0,
+          Clay: 0.9,
+        };
+
         const calculations = relevantFertilizers.map((fertilizer) => {
           const averageAmount = fertilizer.fertilizerAmount; // kg/ha
           const yieldRatio = expectedYield / averageYield;
           const totalAmountNeeded =
-            averageAmount * landSize * yieldRatio * soilTypeFactor[soilType]; // Adjust with soilType factor
-  
-          // Return the calculation details for logging
+            averageAmount * landSizeHa * yieldRatio * soilTypeFactor[soilType];
+
           return {
-            name: fertilizer.name, // Fertilizer name
+            name: fertilizer.name,
             soilType: fertilizer.soilType,
-            totalAmountNeeded: totalAmountNeeded.toFixed(2), // Total amount in kg
+            totalAmountNeeded: totalAmountNeeded.toFixed(2),
           };
         });
-  
-        // Log the calculated fertilizer amounts
-        console.log("Fertilizer Calculations:");
-        calculations.forEach((calc) => {
-          console.log(`Fertilizer: ${calc.name}`);
-          console.log(`Soil Type: ${calc.soilType}`);
-          console.log(`Total Amount Needed (Kg): ${calc.totalAmountNeeded}`);
-        });
-  
-        // Update state with calculated data
+
+        console.log("Fertilizer Calculations:", calculations);
+
         setFertilizerCalculations(calculations);
-        setIsResultModalVisible(true); // Show the results modal if necessary
+        setCurrentStep(2);
+        setIsResultModalVisible(true);
+        setIsModalVisible(false); // Close the main modal
+
+        console.log(fertilizerCalculations); // Check the data before rendering
+
+        // Log state updates
+        console.log("States updated:", {
+          fertilizerCalculations: calculations,
+          currentStep: 2,
+          isResultModalVisible: true,
+        });
       })
       .catch((error) => {
         console.error("Error validating form fields:", error);
+        message.error("Please fill in all required fields correctly.");
       });
   };
-  
-  
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -479,29 +535,23 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate }) => {
       <Modal
         title="Fertilizer Amount Calculator"
         visible={isModalVisible}
-        onOk={handleOk}
         onCancel={handleCancel}
         footer={[
-          <Button key="back" onClick={handleCancel}>
-            Cancel
-          </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            onClick={handleOk}
-            disabled={canCalculate}
-          >
-            Calculate
-          </Button>,
+         
         ]}
       >
-        <Form form={form} layout="vertical">
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleOk} // Will trigger only when all validations are met
+        >
           <Steps current={currentStep}>
             <Step title="Crop Selection" />
             <Step title="Land Size" />
             <Step title="Fertilizer Calculation" />
           </Steps>
 
+          {/* Step 1: Crop Selection */}
           {currentStep === 0 && (
             <>
               <Form.Item
@@ -518,7 +568,6 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate }) => {
                   style={{ width: "100%" }}
                   onChange={(value) => {
                     setSelectedCrop(value); // Update the selected crop
-                    // Find the corresponding crop and set expectedYield
                     const selectedCropData = cropOptions.find(
                       (crop) => crop.cropName === value
                     );
@@ -552,12 +601,13 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate }) => {
             </>
           )}
 
+          {/* Step 2: Land Size and Yield */}
           {currentStep === 1 && (
             <>
               <Form.Item
                 label="Land Size (sq meters)"
                 name="landSize"
-                initialValue={currentDetail?.area} // Use the current map detail for land size
+                initialValue={currentDetail?.area}
               >
                 <Input placeholder="Land size" />
               </Form.Item>
@@ -577,98 +627,127 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate }) => {
             </>
           )}
 
+          {/* Step 3: Fertilizer Calculation */}
           {currentStep === 2 && (
-            <>
-              <div>
-                <Form form={form} layout="vertical" onFinish={handleOk}>
-                  <Form.Item
-                    label="Crop Type"
-                    name="cropType"
-                    rules={[
-                      { required: true, message: "Please select a crop type" },
-                    ]}
-                  >
-                    <Input placeholder="Enter crop type (e.g., Wheat)" />
-                  </Form.Item>
+            <div className="p-6 bg-white rounded shadow-md">
+              <Form form={form} layout="vertical">
+                <Form.Item
+                  name="cropType"
+                  label="Crop Type"
+                  rules={[
+                    { required: true, message: "Please select a crop type!" },
+                  ]}
+                >
+                  <Select placeholder="Select crop type" showSearch>
+                    {cropOptions.map((crop) => (
+                      <Option key={crop.cropName} value={crop.cropName}>
+                        {crop.cropName}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
 
-                  <Form.Item
-                    label="Soil Type"
-                    name="soilType"
-                    rules={[
-                      { required: true, message: "Please select a soil type" },
-                    ]}
-                  >
-                    <Input placeholder="Enter soil type (e.g., Loamy)" />
-                  </Form.Item>
+                <Form.Item
+                  name="soilType"
+                  label="Soil Type"
+                  rules={[
+                    { required: true, message: "Please select a soil type!" },
+                  ]}
+                >
+                  <Select placeholder="Select soil type" showSearch>
+                    {Object.keys(soilTypeFactor).map((soil) => (
+                      <Option key={soil} value={soil}>
+                        {soil}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
 
-                  <Form.Item
-                    label="Expected Yield (tons/ha)"
-                    name="expectedYield"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter expected yield",
-                      },
-                    ]}
-                  >
-                    <Input
-                      type="number"
-                      placeholder="Enter expected yield (e.g., 2)"
-                    />
-                  </Form.Item>
+                <Form.Item
+                  name="landSize"
+                  label="Land Size (ha)"
+                  rules={[
+                    { required: true, message: "Please enter the land size!" },
+                  ]}
+                >
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="e.g., 10.5"
+                  />
+                </Form.Item>
 
-                  <Form.Item
-                    label="Land Size (ha)"
-                    name="landSize"
-                    rules={[
-                      { required: true, message: "Please enter land size" },
-                    ]}
-                  >
-                    <Input
-                      type="number"
-                      placeholder="Enter land size (e.g., 10)"
-                    />
-                  </Form.Item>
-                </Form>
-              </div>{" "}
-            </>
-          )}
+                <Form.Item
+                  name="expectedYield"
+                  label="Expected Yield (tons)"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter the expected yield!",
+                    },
+                  ]}
+                >
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="e.g., 20.0"
+                  />
+                </Form.Item>
 
-          {currentStep === 3 && (
-            <>
-              <Table
-                columns={[
-                  {
-                    title: "Fertilizer Name",
-                    dataIndex: "name",
-                    key: "name",
-                  },
-                  {
-                    title: "Soil Type",
-                    dataIndex: "soilType",
-                    key: "soilType",
-                  },
-                  {
-                    title: "Total Amount Needed (Kg)",
-                    dataIndex: "totalAmountNeeded",
-                    key: "totalAmountNeeded",
-                  },
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    onClick={handleOk}
+                    loading={loading} // Add a loading state if needed
+                    className="w-full"
+                  >
+                    Calculate
+                  </Button>
+                </Form.Item>
+              </Form>
+
+              <Modal
+                title="Fertilizer Calculation Results"
+                visible={isResultModalVisible}
+                onOk={() => setIsResultModalVisible(false)}
+                onCancel={() => setIsResultModalVisible(false)}
+                footer={[
+                  <Button
+                    key="back"
+                    onClick={() => setIsResultModalVisible(false)}
+                  >
+                    Close
+                  </Button>,
                 ]}
-                dataSource={fertilizerCalculations}
-                pagination={false}
-                rowKey="name"
-              />
-            </>
+                className="modal-custom"
+              >
+                {fertilizerCalculations.length > 0 ? (
+                  <Table
+                    columns={columns}
+                    dataSource={fertilizerCalculations}
+                    pagination={{
+                      showSizeChanger: true,
+                      showQuickJumper: true,
+                      showTotal: (total, range) =>
+                        `${range[0]}-${range[1]} of ${total} items`,
+                    }}
+                    rowKey="name"
+                    className="w-full"
+                  />
+                ) : (
+                  <p>No results to display</p>
+                )}
+              </Modal>
+            </div>
           )}
         </Form>
 
-        <Button
-          onClick={handleNextStep}
-          disabled={!isStepValid(currentStep) || currentStep >= 2}
-        >
+        {/* Navigation Buttons */}
+        <Button onClick={handleNextStep} disabled={!isStepValid(currentStep)}>
           Next
         </Button>
-
         <Button onClick={handlePrevStep} disabled={currentStep === 0}>
           Back
         </Button>
