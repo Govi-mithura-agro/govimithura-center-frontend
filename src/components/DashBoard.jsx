@@ -199,7 +199,7 @@ function DashBoard() {
         </div>
       </div>
 
-      <div className="flex gap-4 ml-5 mt-8 mb-8">
+      <div className="flex gap-4  mt-8 mb-8">
         {/* Updates section */}
         <div className="w-[750px] h-[438px] bg-white rounded-[11px] flex flex-col p-4  ml-4 mb-4">
           <div className="mb-4 flex justify-between items-center">
@@ -216,7 +216,7 @@ function DashBoard() {
           </div>
         </div>
         <div>
-          <div className="w-[445px] h-[437px] p-6 bg-white rounded-[9px] shadow">
+          <div className="w-[445px] h-[437px] p-6 ml-4 bg-white rounded-[9px] shadow">
           <MapContainer
               center={[7.8731, 80.7718]}
               zoom={7}
