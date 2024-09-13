@@ -27,6 +27,7 @@ const items = [
     getItem("Crop Data", "/cropdata"),
   ]),
   getItem("Measure Lands", "sub4", <Icon icon="grommet-icons:map" />, [
+    getItem("Fertilizer Data", "/fertilizerrdata"),
     getItem("Measure", "/measure"),
     getItem("Saved Lands", "/savedlands"),
   ]),

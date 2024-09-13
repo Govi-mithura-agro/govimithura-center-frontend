@@ -15,6 +15,7 @@ import AllAppoinemnts from "./components/AllAppoinemnts";
 import DashBoard from "./components/DashBoard";
 import PointAddingWeb from "./components/PointAddingWeb/PointAddingWeb";
 import ResizeMap from "./components/ResizeMap/ResizeMap";
+import FertilizerData from "./components/FertilizerData";
 import 'leaflet/dist/leaflet.css';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
               <Route path="/croppredictionfactors" element={<PredictionFactors />} />
               <Route path="/cropdata" element={<CropData />} />
               <Route path="/savedlands" element={<SavedLands />} />
+              <Route path="/fertilizerrdata" element={<FertilizerData />} />
               <Route path="/Requestfertilizers" element={<RequestFertilizers />} />
               <Route path="/managefertilizer" element={<ManageFertilizers />} />
               <Route path="/appointmentinsights" element={<Appoinment />} />
