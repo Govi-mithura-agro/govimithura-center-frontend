@@ -130,7 +130,7 @@ function RequestFertilizers() {
 
 
   return (
-    <div >
+    <div className="mr-2">
 
 <Modal
         title={<p>Request Fertilizer</p>}
@@ -258,12 +258,12 @@ function RequestFertilizers() {
 
     
       {/* Fertilizer Requests Table */}
-      <div className="mt-5 mr-3 ml-4">
+      <div className="mt-5 mr-3 ml-3">
         <Table columns={columns} dataSource={requestData} pagination={false} />
       </div>
   
 
-    <div className=" h-[66px] p-4 bg-white rounded-tl-lg rounded-tr-lg flex flex-col justify-center items-start gap-[721px] mt-5 mr-4 ml-3">
+    <div className=" h-[66px] p-4 bg-white rounded-tl-lg rounded-tr-lg flex flex-col justify-center items-start gap-[721px] mt-5 mr-3 ml-3">
       <div className="w-full h-[50px] relative">
         <div className="absolute left-0 top-[28px] w-[416.21px] text-zinc-500/80 text-[13px] font-normal font-['Plus Jakarta Sans'] leading-snug">
           Lorem ipsum dolor sit amet, consectetur adipis.
@@ -286,7 +286,7 @@ function RequestFertilizers() {
       </div>
     </div>
 
-    <div className="mt-5 mr-3 ml-4">
+    <div className="mt-5 mr-3 ml-3">
     <Table columns={columns} dataSource={pendingData} pagination={false} />
     </div>
     <br></br>
