@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 
-
-
 function Warehousebarchart({ chartWidth = 800, chartHeight = 500 }) {
   const chartRef = useRef(null);
   const canvasRef = useRef(null);
@@ -18,12 +16,11 @@ function Warehousebarchart({ chartWidth = 800, chartHeight = 500 }) {
     { day: 'Warehouse', count: 35 },
   ];
 
-  const createChart = (labels, data) => {
+  useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
-    if (chartRef.current) {
-      chartRef.current.destroy(); // Destroy previous chart instance
-    }
-    chartRef.current = new Chart(ctx, {
+
+    // Create the chart instance
+    const chartInstance = new Chart(ctx, {
       type: "bar",
       data: {
         labels: labels,
@@ -74,11 +71,12 @@ function Warehousebarchart({ chartWidth = 800, chartHeight = 500 }) {
         },
       },
     });
-  };
 
-  useEffect(() => {
-    createChart(labels, data);
-  }, [labels, data]);
+    // Cleanup function to destroy the chart instance
+    return () => {
+      chartInstance.destroy();
+    };
+  }, []); // Empty dependency array to ensure this effect runs only once
 
   return (
     <div
