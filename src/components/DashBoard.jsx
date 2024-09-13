@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import { Icon } from "@iconify/react";
 import { Table, Tag } from 'antd';
 import { Doughnut } from "react-chartjs-2";
@@ -101,10 +101,22 @@ const data = [
 ];
 
 
-  
 
 
 function DashBoard() {
+
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+   
+  
   return (
     <div>
       <div className="flex gap-4 p-4">
@@ -147,7 +159,7 @@ function DashBoard() {
             <div className="text-yellow-500 text-3xl"><Icon icon="solar:sun-2-bold" className='w-16 h-16'  style={{color:' #f2dd38'}} /></div>
           </div>
           <div>
-            <h3 className="text-gray-800 text-xl">8:06:07 AM</h3>
+            <h3 className="text-gray-800 text-xl">{currentTime}</h3>
             <p className="text-gray-600">Realtime Insight</p>
           </div>
         </div>
@@ -199,7 +211,7 @@ function DashBoard() {
         </div>
       </div>
 
-      <div className="flex gap-4 ml-5 mt-8 mb-8">
+      <div className="flex gap-4  mt-8 mb-8">
         {/* Updates section */}
         <div className="w-[750px] h-[438px] bg-white rounded-[11px] flex flex-col p-4  ml-4 mb-4">
           <div className="mb-4 flex justify-between items-center">
@@ -216,7 +228,7 @@ function DashBoard() {
           </div>
         </div>
         <div>
-          <div className="w-[445px] h-[437px] p-6 bg-white rounded-[9px] shadow">
+          <div className="w-[445px] h-[437px] p-6 ml-4 bg-white rounded-[9px] shadow">
           <MapContainer
               center={[7.8731, 80.7718]}
               zoom={7}
