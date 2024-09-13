@@ -16,25 +16,22 @@ import DashBoard from "./components/DashBoard";
 import PointAddingWeb from "./components/PointAddingWeb/PointAddingWeb";
 import ResizeMap from "./components/ResizeMap/ResizeMap";
 import FertilizerData from "./components/FertilizerData";
-import 'leaflet/dist/leaflet.css';
+import Login from "./pages/Auth/Login";
+import SignUp from "./pages/Auth/Signup";
 
-function App() {
+function MainLayout() {
   return (
-    <BrowserRouter>
-      <div className="App w-screen h-screen overflow-x-hidden">
-      <Routes>
-        <Route path="/measure" element={<Mesure />} />
-        <Route path="/pointAddingWeb" element={<PointAddingWeb />} />
-        <Route path="/resizemap" element={<ResizeMap />} />
-      </Routes>
-        <div className="flex flex-1 justify-start items-start bg-[#f5faff]">
-          <div className="fixed">
-            <ImportedSideMenu />
-          </div>
-          <div className="flex-1 h-full overflow-x-hidden overflow-y-auto ml-[270px] w-[calc(100%-271px)]">
-            <NavBar />
+    <div className="App w-screen h-screen overflow-x-hidden">
+      <div className="flex flex-1 justify-start items-start bg-[#f5faff]">
+        <div className="fixed">
+          <ImportedSideMenu />
+        </div>
+        <div className="flex-1 h-full overflow-x-hidden overflow-y-auto ml-[270px] w-[calc(100%-271px)]">
+          <NavBar />
+          <div className="content">
             <Routes>
-              <Route path="/" element={<DashBoard />} />
+              <Route path="/dashBoard" element={<DashBoard />} />
+              
               <Route path="/farmers" element={<Farmers />} />
               <Route path="/cropprediction" element={<CropPrediction />} />
               <Route path="/croppredictionfactors" element={<PredictionFactors />} />
@@ -49,6 +46,24 @@ function App() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Authentication Routes */}
+        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/measure" element={<Mesure />} />
+        <Route path="/pointAddingWeb" element={<PointAddingWeb />} />
+        <Route path="/resizemap" element={<ResizeMap />} />
+
+        {/* Main Application Routes */}
+        <Route path="/*" element={<MainLayout />} />
+      </Routes>
     </BrowserRouter>
   );
 }
