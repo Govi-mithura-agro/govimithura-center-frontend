@@ -30,7 +30,7 @@ function MainLayout() {
           <NavBar />
           <div className="content">
             <Routes>
-              <Route path="/dashBoard" element={<DashBoard />} />
+              <Route path="/dashboard" element={<DashBoard />} />
               
               <Route path="/farmers" element={<Farmers />} />
               <Route path="/cropprediction" element={<CropPrediction />} />
