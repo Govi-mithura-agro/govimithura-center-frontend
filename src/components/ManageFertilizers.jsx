@@ -50,7 +50,7 @@ function ManageFertilizers() {
     showuLoading();
     setselectedFertilizerId(id)
     try {
-      const response = await axios.post(`http://localhost:5000/api/fertilizers/getfertilizer/${id}`);
+      const response = await axios.post(`http://localhost:5000/api/fertilizers/getFertilizer/${id}`);
       setuFertilizerName(response.data.fertilizer.fertilizerName);
       setuQuantity(response.data.fertilizer.quantity);
     } catch (error) {
