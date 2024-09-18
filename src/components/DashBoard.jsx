@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Icon } from "@iconify/react";
 import { Table, Tag } from 'antd';
 import { Doughnut } from "react-chartjs-2";
@@ -106,9 +107,22 @@ const data = [
 function DashBoard() {
 
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
-
+  const [farmerCount, setFarmerCount] = useState(0); // State to store the farmer count
+ 
 
   useEffect(() => {
+    // Fetch all farmers to get the count
+    const fetchFarmerCount = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/farmers/getAllFarmers'); // Make sure this endpoint matches your backend route
+        setFarmerCount(response.data.length);  // Set the farmer count
+      } catch (error) {
+        console.error('Error fetching farmer count:', error);
+      }
+    };
+
+    fetchFarmerCount();
+
     const interval = setInterval(() => {
       setCurrentTime(new Date().toLocaleTimeString());
     }, 1000);
@@ -116,6 +130,27 @@ function DashBoard() {
     return () => clearInterval(interval);
   }, []);
    
+
+  const [farmersStatusCount, setFarmersStatusCount] = useState({ active: 0, unverified: 0 });
+
+  useEffect(() => {
+    const fetchFarmersVerificationData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/farmers/getAllFarmers'); 
+        const farmers = response.data;
+
+        // Calculate counts for Active and Unverified farmers
+        const activeCount = farmers.filter(farmer => farmer.status === "Active").length;
+        const unverifiedCount = farmers.filter(farmer => farmer.status === "Unverified").length;
+
+        setFarmersStatusCount({ active: activeCount, unverified: unverifiedCount });
+      } catch (error) {
+        console.error('Error fetching farmer verification data:', error);
+      }
+    };
+
+    fetchFarmersVerificationData();
+  }, []);
   
   return (
     <div>
@@ -138,7 +173,7 @@ function DashBoard() {
           </div>
           <div>
             <h3 className="text-gray-800 font-bold">Farmers</h3>
-            <p className="text-gray-800 text-xl">30</p>
+            <p className="text-gray-800 text-xl">{farmerCount}</p>
           </div>
         </div>
 
@@ -180,35 +215,58 @@ function DashBoard() {
           </div>
         </div>
 
-        <div className="w-[545px] h-[345px] bg-white rounded-[11px] flex flex-col  ">
+         {/* New section */}
+      <div className="flex  ml-4 space-x-10">
+        
+
+        <div className="w-[545px] h-[345px] bg-white rounded-[11px] flex flex-col ">
           <div className="w-[262px] h-[74px] mb-4 p-4">
             <div className="booking_dashboard_doughnut_container ">
-              <h4>Fertilizers Categories</h4>
-              <p className='text-gray-400'>Popular Categories among fertilizers  </p>
+              <h4>Farmer verification</h4>
+              <p className='text-gray-400'>All verification farers summary </p>
               <div className="booking_dashboard_doughnut flex mt-10 ml-10">
-                <Doughnut data={pieChartData} options={options} />
-                <div className="flex flex-col ml-8 mt-10">
-                  {pieChartData.labels.map((label, index) => (
-                    <div key={index} className="flex items-center mb-2">
-                      <div
-                        className="legend-color"
-                        style={{
-                          backgroundColor:
-                            pieChartData.datasets[0].backgroundColor[index],
-                          width: '20px',
-                          height: '20px',
-                          borderRadius: '50%',
-                          marginRight: '8px',
-                        }}
-                      ></div>
-                      <div className="legend-label">AAAAA</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+  <Doughnut
+    data={{
+      labels: ['Active', 'Unverified'],
+      datasets: [
+        {
+          label: "Farmers",
+          data: [farmersStatusCount.active, farmersStatusCount.unverified],
+          backgroundColor: [
+            "#82cd47", // Active farmers
+            "#f0ff42", // Unverified farmers
+          ],
+          borderWidth: 1,
+        },
+      ],
+    }}
+    options={options}
+  />
+  <div className="flex flex-col ml-6 mt-10">
+    {['Active', 'Unverified'].map((label, index) => (
+      <div key={index} className="flex items-center mb-2">
+        <div
+          className="legend-color mt-6"
+          style={{
+            backgroundColor: ['#82cd47', '#f0ff42'][index], // Use the same colors from the chart
+            width: '20px',
+            height: '20px',
+            borderRadius: '50%',
+            marginRight: '8px',
+          }}
+        ></div>
+        <div className="w-32 mt-5">
+          {label}: {index === 0 ? farmersStatusCount.active : farmersStatusCount.unverified}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
             </div>
           </div>
         </div>
+      </div>
       </div>
 
       <div className="flex gap-4  mt-8 mb-8">

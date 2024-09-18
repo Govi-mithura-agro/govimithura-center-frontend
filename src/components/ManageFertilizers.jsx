@@ -280,7 +280,7 @@ function ManageFertilizers() {
         <div className="absolute right-0 top-0 w-[190.23px] h-[30px] p-4 bg-white rounded-[5px] flex justify-center  items-center mr-[10px]">
           <div className="w-[126px] flex justify-center ml-10 items-center gap-[5px]">
           <div className="w-[90px] h-[35px] bg-[#0c6c41] rounded flex justify-center items-center">
-          <button onClick={showLoading} className="text-white  text-sm font-normal font-['Lexend']">
+          <button onClick={showLoading} className="text-white  text-sm font-normal font-['Lexend'] p-1">
            Add Fertilizer
           </button>
         </div>
