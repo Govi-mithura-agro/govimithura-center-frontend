@@ -15,7 +15,7 @@ function getItem(label, key, icon, children, type) {
 }
 
 const items = [
-  getItem("Dashboard", "/", <Icon icon="material-symbols:dashboard-outline" />),
+  getItem("Dashboard", "/dashboard", <Icon icon="material-symbols:dashboard-outline" />),
   getItem(
     "Farmers",
     "/farmers",

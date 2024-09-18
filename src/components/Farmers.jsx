@@ -19,7 +19,6 @@ import {
   Table,
 } from "antd";
 
-
 import axios from "axios";
 import { set } from "mongoose";
 
@@ -34,9 +33,17 @@ function FarmersList() {
   const [tableModelContent, setTableModelContent] = useState();
   const [isEmployeeLoading, setIsEmployeeLoading] = useState(false);
 
-
   // Add farmer model use states
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState({
+    addressLine: "",
+    province: "",
+    district: "",
+    division: "",
+  });
+  const [addressLine, setAddressLine] = useState("");
+  const [province, setProvince] = useState("");
+  const [district, setDistrict] = useState("");
+  const [division, setDivision] = useState("");
   const [dob, setDob] = useState("");
   const [fullName, setFullName] = useState("");
   const [idNumber, setIdNumber] = useState("");
@@ -45,7 +52,6 @@ function FarmersList() {
   const [username, setUsername] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [status, setStatus] = useState("");
-
 
   //Edit farmer model use states
   const [editAddress, setEditAddress] = useState("");
@@ -97,7 +103,7 @@ function FarmersList() {
 
   const saveEditEmployee = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
+
     if (
       !editAddress ||
       !editDob ||
@@ -110,13 +116,15 @@ function FarmersList() {
     } else if (!emailRegex.test(editEmail)) {
       return message.error("Please enter a valid email address");
     }
-  
+
     if (!editProfileImage || editProfileImage.trim() === "") {
-      setProfileImage("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/1200px-Windows_10_Default_Profile_Picture.svg.png");
+      setProfileImage(
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/1200px-Windows_10_Default_Profile_Picture.svg.png"
+      );
     } else {
       console.log("Profile image already set:", editProfileImage);
     }
-  
+
     const farmerData = {
       farmerID: tableModelContent.farmerID, // Ensure you send the correct ID field
       address: editAddress,
@@ -127,22 +135,23 @@ function FarmersList() {
       profileImage: editProfileImage,
       email: editEmail,
     };
-  
-    console.log('Sending farmer data:', farmerData);
-  
+
+    console.log("Sending farmer data:", farmerData);
+
     try {
-      const response = await axios.post("http://localhost:5000/api/farmers/editFarmer", farmerData);
-      console.log('Response:', response.data);
+      const response = await axios.post(
+        "http://localhost:5000/api/farmers/editFarmer",
+        farmerData
+      );
+      console.log("Response:", response.data);
       message.success("Farmer edited successfully");
       setTableModelOpen(false);
       fetchFarmersList();
     } catch (error) {
-      console.error('Error:', error.response?.data?.message || error.message);
+      console.error("Error:", error.response?.data?.message || error.message);
       message.error(error.response?.data?.message || "An error occurred");
     }
   };
-  
-
 
   //Employee table
   const columns = [
@@ -171,17 +180,25 @@ function FarmersList() {
       key: "idnumber",
       render: (text) => <a>{text}</a>,
     },
-    
+
     {
       title: "Address",
       dataIndex: "address",
       key: "address",
+      render: (address) => (
+        <div>
+          <p>{address.addressLine}</p>
+          <p>{address.province}</p>
+          <p>{address.district}</p>
+          <p>{address.division}</p>
+        </div>
+      ),
     },
 
     {
-      title : "phoneNumber",
-      dataIndex : "phoneNumber",
-      key : "phoneNumber"
+      title: "phoneNumber",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
     },
     {
       title: "Status",
@@ -261,17 +278,19 @@ function FarmersList() {
       setIsEmployeeLoading(false);
     } catch (error) {
       console.error("Error fetching farmers list:", error);
-      setIsEmployeeLoading(false); 
+      setIsEmployeeLoading(false);
     }
   }
-  
 
   const saveFarmer = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     // Validate required fields
     if (
-      !address ||
+      !address.addressLine ||
+      !address.province ||
+      !address.district ||
+      !address.division ||
       !dob ||
       !fullName ||
       !idNumber ||
@@ -295,27 +314,40 @@ function FarmersList() {
 
     // Prepare the data to be sent
     const farmerData = {
-      profileImage: profileImage,  // Ensure this field is named correctly
-      idnumber: idNumber,           // Ensure this field is named correctly
-      fullname: fullName,           // Ensure this field is named correctly
+      profileImage,
+      idnumber: idNumber,
+      fullname: fullName,
       email,
       phoneNumber,
       username,
-      address,
+      address: {
+        addressLine: address.addressLine,
+        province: address.province,
+        district: address.district,
+        division: address.division,
+      },
       dob,
       status: "Unverified",
     };
 
     try {
       // Send a POST request to add a new farmer
-      await axios.post("http://localhost:5000/api/farmers/addFarmer", farmerData);
+      await axios.post(
+        "http://localhost:5000/api/farmers/addFarmer",
+        farmerData
+      );
 
       message.success("Farmer added successfully");
       setAddEmployeeModelOpen(false);
       fetchFarmersList();
 
       // Reset form fields
-      setAddress("");
+      setAddress({
+        addressLine: "",
+        province: "",
+        district: "",
+        division: "",
+      });
       setDob(null);
       setFullName("");
       setIdNumber("");
@@ -325,12 +357,12 @@ function FarmersList() {
       setProfileImage("");
       setFileList([]);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "An error occurred while adding the farmer";
+      const errorMessage =
+        error.response?.data?.message ||
+        "An error occurred while adding the farmer";
       message.error(errorMessage);
     }
   };
-
-
 
   // Image upload
   const [loading, setLoading] = useState(false);
@@ -452,18 +484,17 @@ function FarmersList() {
   const verifyFarmer = async () => {
     try {
       // Verify the farmer by sending a POST request to the server
-      await axios.post(
-        "http://localhost:5000/api/farmers/verifyFarmer",
-        { farmerID: tableModelContent.farmerID }
-      );
-      
+      await axios.post("http://localhost:5000/api/farmers/verifyFarmer", {
+        farmerID: tableModelContent.farmerID,
+      });
+
       // Display a success message
       message.success("Farmer verified successfully");
-  
+
       // Close any open modals or dialogs
       setTableModelOpen(false);
       setIsVerifyModalOpen(false);
-  
+
       // Fetch the updated list of farmers
       fetchFarmersList();
     } catch (error) {
@@ -472,7 +503,6 @@ function FarmersList() {
       message.error("Failed to verify farmer");
     }
   };
-  
 
   useEffect(() => {
     fetchFarmersList();
@@ -868,14 +898,28 @@ function FarmersList() {
               </div>
 
               <div class="mt-4 flex flex-col gap-1.5 justify-start items-start rounded-lg border border-gray-300 p-[10px_20px_15px_20px]">
-                <span>Address</span>
-                <TextArea
-                  style={{
-                    width: 520,
-                  }}
-                  rows={4}
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                <span>Address Line</span>
+                <Input
+                  value={addressLine}
+                  onChange={(e) => setAddressLine(e.target.value)}
+                />
+
+                <span>Province</span>
+                <Input
+                  value={province}
+                  onChange={(e) => setProvince(e.target.value)}
+                />
+
+                <span>District</span>
+                <Input
+                  value={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                />
+
+                <span>Division</span>
+                <Input
+                  value={division}
+                  onChange={(e) => setDivision(e.target.value)}
                 />
               </div>
             </div>
