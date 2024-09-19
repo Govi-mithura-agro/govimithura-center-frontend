@@ -13,12 +13,16 @@ function NavBar() {
   }, []);
 
   const handleLogout = () => {
+    // Clear all user-related data from local storage
     localStorage.removeItem("currentUser");
+    localStorage.removeItem("scrollPosition");
+    localStorage.removeItem("rememberedEmail");
+    // Add any other user-related items you might have stored
+    
     setLoggedUser(null);
     message.success("Logged out successfully");
     navigate("/");
   };
-
   const items = [
     {
       label: <a href="/">Home</a>,
