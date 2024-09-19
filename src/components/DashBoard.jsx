@@ -196,8 +196,7 @@ function DashBoard() {
   
   
   return (
-    <div> <h1>{warehouseID}</h1>
-    <h1>{district}</h1>
+    <div>
       <div className="flex gap-4 p-4">
         {/* Card 1 */}
         <div className="flex items-center bg-green-100 p-4 rounded-md w-64 ">
