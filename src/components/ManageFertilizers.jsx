@@ -139,6 +139,7 @@ function ManageFertilizers() {
     const currentDate = today.toISOString().split('T')[0]; // Extract the date part only
 
     const fertilizer = {
+      warehouseID:warehouseID,
       fertilizerName,
       quantity,
       date: currentDate,
