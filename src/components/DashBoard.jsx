@@ -101,7 +101,16 @@ const data = [
   },
 ];
 
-
+// Function to style the district areas
+const districtStyle = (feature) => {
+  return {
+    fillColor: "blue", // Set your color based on the district data
+    weight: 2,
+    opacity: 1,
+    color: "white",  // Border color
+    fillOpacity: 0.7
+  };
+};
 
 
 function DashBoard() {
@@ -151,9 +160,44 @@ function DashBoard() {
 
     fetchFarmersVerificationData();
   }, []);
+
+  const user = JSON.parse(localStorage.getItem("currentUser"));
+  const [warehouseID, setWarehouseID] = useState('');
+  
+
+ const district=user?.address?.district
+
+  useEffect(() => {
+    const fetchWarehouses = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/warehouses/getallwarehouse');
+        const warehouses = response.data;
+
+        // Find the warehouse that matches the user's district
+        const matchingWarehouse = warehouses.find(warehouse => warehouse.district === user?.address?.district);
+        
+        // If a matching warehouse is found, assign its ID to warehouseID
+        if (matchingWarehouse) {
+          setWarehouseID(matchingWarehouse._id); // Assuming _id is the ID field for the warehouse
+        }
+
+       
+      } catch (error) {
+        console.error('Error fetching warehouses:', error);
+      }
+    };
+
+     
+    if (user?.address?.district) {
+      fetchWarehouses();
+    }
+  }, [user?.address?.district]);
+ 
+  
   
   return (
-    <div>
+    <div> <h1>{warehouseID}</h1>
+    <h1>{district}</h1>
       <div className="flex gap-4 p-4">
         {/* Card 1 */}
         <div className="flex items-center bg-green-100 p-4 rounded-md w-64 ">
@@ -161,8 +205,8 @@ function DashBoard() {
             <div className="text-green-600 text-3xl"><Icon icon="material-symbols-light:warehouse-outline" className='h-16 w-16'  style={{color: '#008000'}} /></div>
           </div>
           <div>
-            <h3 className="text-green-800 font-bold">Anuradhapura</h3>
-            <p className="text-gray-600">No. 123 / A Saliyapura, Anuradhapura</p>
+            <h3 className="text-green-800 font-bold">{user?.address?.district}</h3>
+            <p className="text-gray-600"></p>
           </div>
         </div>
 
@@ -184,7 +228,7 @@ function DashBoard() {
           </div>
           <div>
             <h3 className="text-gray-800 text-xl">24°C</h3>
-            <p className="text-gray-600">Anuradhapura</p>
+            <p className="text-gray-600">{user?.address?.district}</p>
           </div>
         </div>
 
