@@ -119,9 +119,11 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
   };
 
   const showDeleteConfirm = (detail) => {
+    console.log("Deleting detail:", detail);  // Add this line to debug
     setMapDetailToDelete(detail);
     setDeleteModalVisible(true);
   };
+  
 
   const isStepValid = (step) => {
     const fields =
@@ -227,32 +229,40 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
       });
   };
 
-  const handleDeleteConfirm = async () => {
-    try {
-        setDeleteModalVisible(false);
-        setLoading(true);
-        const response = await axios.delete(
-        `http://localhost:5000/api/mapTemplate/deleteTemplate/${mapDetailToDelete._id}`
-        );
-        message.success("Map detail deleted successfully");
-        const updatedMapDetails = mapDetails.filter(
-        (detail) => detail._id !== mapDetailToDelete._id
-        );
-
-        setMapDetails(updatedMapDetails);
-    } catch (error) {
-        console.error("Failed to delete map detail:", error);
-
-        message.error("Failed to delete map detail");
-    } finally {
-        setLoading(false);
-        setMapDetailToDelete(null);
-    }
+  const handleDeleteCancel = () => {
+    setDeleteModalVisible(false);
+    setMapDetailToDelete(null);
     };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
+    const handleDeleteConfirm = async () => {
+      try {
+        setDeleteModalVisible(false);
+        setLoading(true);
+        console.log("Sending DELETE request to:", mapDetailToDelete._id);  // Log ID
+        
+        const response = await axios.delete(
+          `http://localhost:5000/api/mapTemplate/deleteMapDetail/${mapDetailToDelete._id}`
+        );
+        
+        console.log("Delete response:", response);  // Log response to check success
+        message.success("Map detail deleted successfully");
+    
+        // Update the UI after successful deletion
+        const updatedMapDetails = mapDetails.filter(
+          (detail) => detail._id !== mapDetailToDelete._id
+        );
+        setMapDetails(updatedMapDetails);
+    
+      } catch (error) {
+        console.error("Failed to delete map detail:", error.response || error);
+        message.error("Failed to delete map detail");
+      } finally {
+        setLoading(false);
+        setMapDetailToDelete(null);
+      }
+    };
+    
+  
 
   const handleUpdateCancel = () => {
     setUpdateOpen(false);
@@ -297,10 +307,10 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
     }
   };
 
-  const handleDeleteCancel = () => {
-    setDeleteModalVisible(false);
-    setMapDetailToDelete(null);
-    };
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+  
 
   const handleUpdateOk = async () => {
     try {
