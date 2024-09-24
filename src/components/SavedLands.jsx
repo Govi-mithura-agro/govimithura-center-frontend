@@ -185,18 +185,35 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
       .then((values) => {
         const { cropType, soilType, expectedYield, landSize } = values;
 
+        // Debug: Check the selected crop type
+        console.log("Selected Crop Type:", cropType);
+        console.log("Selected Soil Type:", soilType);
+        console.log("Land Size (ha):", landSize);
+        console.log("Expected Yield (tons):", expectedYield);
+
+        // Filter fertilizers by cropType and soilType
         const relevantFertilizers = fertilizers.filter((fertilizer) => {
+          // Split the crops string by commas and trim spaces
           const cropNames = fertilizer.crops[0]
             .split(",")
             .map((crop) => crop.trim().toLowerCase());
+
+          // Check if the cropType matches any of the crop names and soilType matches
           return cropNames.includes(cropType.toLowerCase());
         });
 
+        // If no fertilizers match the crop
         if (relevantFertilizers.length === 0) {
-          console.error("No fertilizers found for the selected crop and soil type.");
+          console.error(
+            "No fertilizers found for the selected crop and soil type."
+          );
           return;
         }
 
+        // Debug: Log the found fertilizers
+        console.log("Relevant Fertilizers:", relevantFertilizers);
+
+        // Get the average yield for the selected crop
         const selectedCropData = cropOptions.find(
           (crop) => crop.cropName === cropType
         );
@@ -208,26 +225,38 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
 
         const averageYield = selectedCropData.averageYield;
 
+        // Calculate required fertilizer amounts for each fertilizer
         const calculations = relevantFertilizers.map((fertilizer) => {
-          const averageAmount = fertilizer.fertilizerAmount;
+          const averageAmount = fertilizer.fertilizerAmount; // kg/ha
           const yieldRatio = expectedYield / averageYield;
           const totalAmountNeeded =
-            averageAmount * landSize * yieldRatio * soilTypeFactor[soilType];
+            averageAmount * landSize * yieldRatio * soilTypeFactor[soilType]; // Adjust with soilType factor
 
+          // Return the calculation details for logging
           return {
-            name: fertilizer.name,
+            name: fertilizer.name, // Fertilizer name
             soilType: fertilizer.soilType,
-            totalAmountNeeded: totalAmountNeeded.toFixed(2),
+            totalAmountNeeded: totalAmountNeeded.toFixed(2), // Total amount in kg
           };
         });
 
+        // Log the calculated fertilizer amounts
+        console.log("Fertilizer Calculations:");
+        calculations.forEach((calc) => {
+          console.log(`Fertilizer: ${calc.name}`);
+          console.log(`Soil Type: ${calc.soilType}`);
+          console.log(`Total Amount Needed (Kg): ${calc.totalAmountNeeded}`);
+        });
+
+        // Update state with calculated data
         setFertilizerCalculations(calculations);
-        setIsResultModalVisible(true);
+        setIsResultModalVisible(true); // Show the results modal if necessary
       })
       .catch((error) => {
         console.error("Error validating form fields:", error);
       });
   };
+
 
   const handleDeleteCancel = () => {
     setDeleteModalVisible(false);
