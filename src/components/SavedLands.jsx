@@ -35,11 +35,10 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
   const [fertilizerAmount, setFertilizerAmount] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState(null);
-  const [currentDetail, setCurrentDetail] = useState(null); // To store current map detail for calculation
+  const [currentDetail, setCurrentDetail] = useState(null);
   const [fertilizers, setFertilizers] = useState([]);
   const [cropOptions, setCropOptions] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedMap, setSelectedMap] = useState(null);
   const [fertilizerCalculations, setFertilizerCalculations] = useState([]);
   const [isResultModalVisible, setIsResultModalVisible] = useState(false);
   const [canCalculate, setCanCalculate] = useState(false);
@@ -89,14 +88,12 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
       });
   };
 
-  // Fetch fertilizers when component mounts
   useEffect(() => {
     fetchFertilizers();
   }, []);
 
   const handleResultModalOk = () => {
     setIsResultModalVisible(false);
-    // Clear any calculations or related data if necessary
     setFertilizerCalculations([]);
   };
 
@@ -121,12 +118,15 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
     }
   };
 
+  const showDeleteConfirm = (detail) => {
+    setMapDetailToDelete(detail);
+    setDeleteModalVisible(true);
+  };
+
   const isStepValid = (step) => {
     const fields =
       step === 0 ? ["cropType", "soilType"] : ["landSize", "expectedYield"];
-    return form
-      .getFieldsError(fields)
-      .every(({ errors }) => errors.length === 0);
+    return form.getFieldsError(fields).every(({ errors }) => errors.length === 0);
   };
 
   const updateOnClose = () => {
@@ -135,9 +135,9 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
   };
 
   const handleCalculate = (detail) => {
-    setCurrentDetail(detail); // Store the selected map detail for use in the form
-    form.setFieldsValue({ landSize: detail.area }); // Set land size for calculation based on the selected map
-    setIsModalVisible(true); // Show modal
+    setCurrentDetail(detail);
+    form.setFieldsValue({ landSize: detail.area });
+    setIsModalVisible(true);
   };
 
   useEffect(() => {
@@ -147,7 +147,7 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
       setFertilizerCalculations([...fertilizerCalculations]);
       setCanCalculate(false);
     }
-  }, [fertilizerCalculations, currentStep]);
+  }, [isModalVisible]);
 
   useEffect(() => {
     if (fertilizerCalculations.length > 0) {
@@ -155,20 +155,19 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
     }
   }, [fertilizerCalculations]);
 
-  // Function to fetch fertilizer  based on crops
+  const fetchCropData = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/crops/getcropdata"
+      );
+      const crops = response.data.crops;
+      setCropOptions(crops);
+    } catch (error) {
+      console.error("Failed to fetch crop data:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchCropData = async () => {
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/api/crops/getcropdata"
-        );
-        // Store the entire crop objects, not just names
-        const crops = response.data.crops;
-        setCropOptions(crops); // Store full crop data (with cropName and averageYield)
-      } catch (error) {
-        console.error("Failed to fetch crop data:", error);
-      }
-    };
     fetchCropData();
   }, []);
 
@@ -184,35 +183,18 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
       .then((values) => {
         const { cropType, soilType, expectedYield, landSize } = values;
 
-        // Debug: Check the selected crop type
-        console.log("Selected Crop Type:", cropType);
-        console.log("Selected Soil Type:", soilType);
-        console.log("Land Size (ha):", landSize);
-        console.log("Expected Yield (tons):", expectedYield);
-
-        // Filter fertilizers by cropType and soilType
         const relevantFertilizers = fertilizers.filter((fertilizer) => {
-          // Split the crops string by commas and trim spaces
           const cropNames = fertilizer.crops[0]
             .split(",")
             .map((crop) => crop.trim().toLowerCase());
-
-          // Check if the cropType matches any of the crop names and soilType matches
           return cropNames.includes(cropType.toLowerCase());
         });
 
-        // If no fertilizers match the crop
         if (relevantFertilizers.length === 0) {
-          console.error(
-            "No fertilizers found for the selected crop and soil type."
-          );
+          console.error("No fertilizers found for the selected crop and soil type.");
           return;
         }
 
-        // Debug: Log the found fertilizers
-        console.log("Relevant Fertilizers:", relevantFertilizers);
-
-        // Get the average yield for the selected crop
         const selectedCropData = cropOptions.find(
           (crop) => crop.cropName === cropType
         );
@@ -224,37 +206,49 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
 
         const averageYield = selectedCropData.averageYield;
 
-        // Calculate required fertilizer amounts for each fertilizer
         const calculations = relevantFertilizers.map((fertilizer) => {
-          const averageAmount = fertilizer.fertilizerAmount; // kg/ha
+          const averageAmount = fertilizer.fertilizerAmount;
           const yieldRatio = expectedYield / averageYield;
           const totalAmountNeeded =
-            averageAmount * landSize * yieldRatio * soilTypeFactor[soilType]; // Adjust with soilType factor
+            averageAmount * landSize * yieldRatio * soilTypeFactor[soilType];
 
-          // Return the calculation details for logging
           return {
-            name: fertilizer.name, // Fertilizer name
+            name: fertilizer.name,
             soilType: fertilizer.soilType,
-            totalAmountNeeded: totalAmountNeeded.toFixed(2), // Total amount in kg
+            totalAmountNeeded: totalAmountNeeded.toFixed(2),
           };
         });
 
-        // Log the calculated fertilizer amounts
-        console.log("Fertilizer Calculations:");
-        calculations.forEach((calc) => {
-          console.log(`Fertilizer: ${calc.name}`);
-          console.log(`Soil Type: ${calc.soilType}`);
-          console.log(`Total Amount Needed (Kg): ${calc.totalAmountNeeded}`);
-        });
-
-        // Update state with calculated data
         setFertilizerCalculations(calculations);
-        setIsResultModalVisible(true); // Show the results modal if necessary
+        setIsResultModalVisible(true);
       })
       .catch((error) => {
         console.error("Error validating form fields:", error);
       });
   };
+
+  const handleDeleteConfirm = async () => {
+    try {
+        setDeleteModalVisible(false);
+        setLoading(true);
+        const response = await axios.delete(
+        `http://localhost:5000/api/mapTemplate/deleteTemplate/${mapDetailToDelete._id}`
+        );
+        message.success("Map detail deleted successfully");
+        const updatedMapDetails = mapDetails.filter(
+        (detail) => detail._id !== mapDetailToDelete._id
+        );
+
+        setMapDetails(updatedMapDetails);
+    } catch (error) {
+        console.error("Failed to delete map detail:", error);
+
+        message.error("Failed to delete map detail");
+    } finally {
+        setLoading(false);
+        setMapDetailToDelete(null);
+    }
+    };
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -267,129 +261,66 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
 
   const getAllMapDetails = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         "http://localhost:5000/api/mapTemplate/getAllMapDetails"
       );
       setMapDetails(response.data);
-      setLoading(false);
     } catch (error) {
       console.error("Failed to fetch map details:", error);
       message.error("Failed to fetch map details");
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleMapChange = async (mapId) => {
+  const handleUpdateClick = async (mapDetail) => {
     try {
-      setSelectedMap(mapId);
       const response = await axios.get(
-        `http://localhost:5000/api/mapTemplate/getMapDetails/${mapId}`
+        `http://localhost:5000/api/mapTemplate/getMapDetails/${mapDetail._id}`
       );
-
-      if (response.data && response.data.area) {
-        form.setFieldsValue({ landSize: response.data.area }); // Set landSize to area
-      } else {
-        message.error("Map details not found");
-      }
+      setSelectedMapDetail(response.data);
+      form.setFieldsValue({
+        templateName: response.data.templateName,
+        area: response.data.area,
+        perimeter: response.data.perimeter,
+        location: response.data.location,
+        date: new Date(response.data.date).toISOString().split("T")[0],
+        imageUrl: response.data.imageUrl,
+        description: response.data.description,
+        landType: response.data.landType,
+      });
+      setUpdateOpen(true);
     } catch (error) {
       console.error("Failed to fetch map details by id:", error);
       message.error("Failed to fetch map details by id");
     }
   };
 
-  const showDeleteConfirm = (mapDetail) => {
-    setMapDetailToDelete(mapDetail);
-    setDeleteModalVisible(true);
-  };
-
-  const handleDeleteConfirm = () => {
-    if (mapDetailToDelete) {
-      axios
-        .delete(
-          `http://localhost:5000/api/mapTemplate/deleteMapDetail/${mapDetailToDelete._id}`
-        )
-        .then(() => {
-          message.success("Map detail deleted successfully");
-          setMapDetails(
-            mapDetails.filter((detail) => detail._id !== mapDetailToDelete._id)
-          );
-          setDeleteModalVisible(false);
-          setMapDetailToDelete(null);
-        })
-        .catch((error) => {
-          console.error("Failed to delete map detail:", error);
-          message.error("Failed to delete map detail");
-        });
-    }
-  };
-
   const handleDeleteCancel = () => {
     setDeleteModalVisible(false);
     setMapDetailToDelete(null);
-  };
-
-  const handleUpdateClick = async (mapDetail) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/mapTemplate/getAllmapData/${mapDetail._id}`
-      );
-
-      console.log("Response:", response); // Debugging
-
-      if (response.data) {
-        setSelectedMapDetail(response.data);
-
-        // Check if all necessary fields are set correctly
-        form.setFieldsValue({
-          templateName: response.data.templateName || "", // Handle missing data
-          area: response.data.area || "",
-          perimeter: response.data.perimeter || "",
-          location: response.data.location || "",
-          date: response.data.date || "",
-          imageUrl: response.data.imageUrl || "",
-          description: response.data.description || "",
-          landType: response.data.landType || "Urban", // Default value if none
-        });
-
-        setUpdateOpen(true); // Open the drawer
-      } else {
-        message.error("Failed to fetch latest map details");
-      }
-    } catch (error) {
-      console.error("Error fetching map details:", error);
-      message.error("Failed to fetch latest map details");
-    }
-  };
+    };
 
   const handleUpdateOk = async () => {
     try {
       setConfirmLoadingUpdate(true);
-
-      // Fetch the form values
       const updatedDetails = form.getFieldsValue();
-      console.log("Updated Details:", updatedDetails); // Debugging
-
-      // Check if selectedMapDetail contains the _id
-      console.log("Selected Map Detail:", selectedMapDetail);
 
       const response = await axios.put(
         `http://localhost:5000/api/mapTemplate/updateTemplate/${selectedMapDetail._id}`,
         updatedDetails
       );
 
-      if (response.data) {
-        message.success("Map detail updated successfully");
-        const updatedMapDetails = mapDetails.map((detail) =>
-          detail._id === selectedMapDetail._id
-            ? { ...detail, ...response.data }
-            : detail
-        );
-        setMapDetails(updatedMapDetails);
-        setUpdateOpen(false);
-        setSelectedMapDetail(null);
-      } else {
-        message.error("Failed to update map detail");
-      }
+      message.success("Map detail updated successfully");
+      const updatedMapDetails = mapDetails.map((detail) =>
+        detail._id === selectedMapDetail._id
+          ? { ...detail, ...updatedDetails }
+          : detail
+      );
+      setMapDetails(updatedMapDetails);
+      setUpdateOpen(false);
+      setSelectedMapDetail(null);
     } catch (error) {
       console.error("Failed to update map detail:", error);
       message.error("Failed to update map detail");
@@ -409,6 +340,7 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
   const filteredMapDetails = mapDetails.filter((detail) =>
     detail.templateName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
 
   return (
     <>
@@ -700,7 +632,7 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
                   visible={isResultModalVisible}
                   onOk={handleResultModalOk}
                   onCancel={handleResultModalOk}
-                >
+                  >
                   {fertilizerCalculations.length > 0 && (
                     <Table
                       columns={columns}
