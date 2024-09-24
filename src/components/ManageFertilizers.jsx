@@ -15,6 +15,32 @@ function ManageFertilizers() {
   const [quantity, setQuantity] = useState('');
   const [date, setDate] = useState('');
 
+  const user = JSON.parse(localStorage.getItem("currentUser"));
+  const [warehouseID, setWarehouseID] = useState('');
+
+  useEffect(() => {
+    const fetchWarehouses = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/warehouses/getallwarehouse');
+        const warehouses = response.data;
+
+        // Find the warehouse that matches the user's district
+        const matchingWarehouse = warehouses.find(warehouse => warehouse.district === user?.address?.district);
+        
+        // If a matching warehouse is found, assign its ID to warehouseID
+        if (matchingWarehouse) {
+          setWarehouseID(matchingWarehouse._id); // Assuming _id is the ID field for the warehouse
+        }
+      } catch (error) {
+        console.error('Error fetching warehouses:', error);
+      }
+    };
+
+    if (user?.address?.district) {
+      fetchWarehouses();
+    }
+  }, [user?.address?.district]);
+
 
   const showLoading = () => {
     setOpen(true);
@@ -83,15 +109,16 @@ function ManageFertilizers() {
   
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/fertilizers/getallFertilizers");
-      // Ensure you're getting _id from the backend response
-      const formattedFertilizers = response.data.map((fertilizer, index) => ({
-        key: fertilizer._id, // Use the actual _id as the key
+      const response = await axios.post("http://localhost:5000/api/fertilizers/getFertilizerRelaventWarehouseId", {
+        warehouseid: warehouseID,
+      });
+      const formattedFertilizers = response.data.map((fertilizer) => ({
+        key: fertilizer._id,
         fertilizer: fertilizer.fertilizerName,
         lastUpdated: fertilizer.date,
         amount: fertilizer.quantity,
         status: fertilizer.quantity === 0 ? 'out of stock' : fertilizer.quantity < 100 ? 'low stock' : 'In stock',
-        _id: fertilizer._id, // Add the _id to each record for deletion
+        _id: fertilizer._id,
       }));
       setFertilizers(formattedFertilizers);
     } catch (error) {
@@ -100,8 +127,10 @@ function ManageFertilizers() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (warehouseID) {
+      fetchData();
+    }
+  }, [warehouseID]);
 
   const addfertilizer = async (event) => {
     event.preventDefault();
@@ -110,6 +139,7 @@ function ManageFertilizers() {
     const currentDate = today.toISOString().split('T')[0]; // Extract the date part only
 
     const fertilizer = {
+      warehouseID:warehouseID,
       fertilizerName,
       quantity,
       date: currentDate,
@@ -266,7 +296,7 @@ function ManageFertilizers() {
   return (
     <div >
    <div className='flex mt'></div>
-      
+     
    <Bar data={barData} options={barOptions} />
       
       <div className=" h-[66px] p-4 bg-white rounded-tl-lg rounded-tr-lg flex flex-col justify-center items-start gap-[721px] mt-5 mr-4 ml-3">
@@ -280,7 +310,7 @@ function ManageFertilizers() {
         <div className="absolute right-0 top-0 w-[190.23px] h-[30px] p-4 bg-white rounded-[5px] flex justify-center  items-center mr-[10px]">
           <div className="w-[126px] flex justify-center ml-10 items-center gap-[5px]">
           <div className="w-[90px] h-[35px] bg-[#0c6c41] rounded flex justify-center items-center">
-          <button onClick={showLoading} className="text-white  text-sm font-normal font-['Lexend']">
+          <button onClick={showLoading} className="text-white  text-sm font-normal font-['Lexend'] p-1">
            Add Fertilizer
           </button>
         </div>
