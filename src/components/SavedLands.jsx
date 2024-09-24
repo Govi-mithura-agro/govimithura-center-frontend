@@ -94,14 +94,11 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
     fetchFertilizers();
   }, []);
 
-  
   const handleResultModalOk = () => {
     setIsResultModalVisible(false);
     // Clear any calculations or related data if necessary
     setFertilizerCalculations([]);
   };
-
-
 
   const handleNextStep = () => {
     form
@@ -331,31 +328,68 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
     setMapDetailToDelete(null);
   };
 
-  const handleUpdateClick = (mapDetail) => {
-    setSelectedMapDetail(mapDetail);
-    form.setFieldsValue(mapDetail);
-    setUpdateOpen(true);
+  const handleUpdateClick = async (mapDetail) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/mapTemplate/getAllmapData/${mapDetail._id}`
+      );
+
+      console.log("Response:", response); // Debugging
+
+      if (response.data) {
+        setSelectedMapDetail(response.data);
+
+        // Check if all necessary fields are set correctly
+        form.setFieldsValue({
+          templateName: response.data.templateName || "", // Handle missing data
+          area: response.data.area || "",
+          perimeter: response.data.perimeter || "",
+          location: response.data.location || "",
+          date: response.data.date || "",
+          imageUrl: response.data.imageUrl || "",
+          description: response.data.description || "",
+          landType: response.data.landType || "Urban", // Default value if none
+        });
+
+        setUpdateOpen(true); // Open the drawer
+      } else {
+        message.error("Failed to fetch latest map details");
+      }
+    } catch (error) {
+      console.error("Error fetching map details:", error);
+      message.error("Failed to fetch latest map details");
+    }
   };
 
   const handleUpdateOk = async () => {
     try {
       setConfirmLoadingUpdate(true);
+
+      // Fetch the form values
       const updatedDetails = form.getFieldsValue();
+      console.log("Updated Details:", updatedDetails); // Debugging
+
+      // Check if selectedMapDetail contains the _id
+      console.log("Selected Map Detail:", selectedMapDetail);
 
       const response = await axios.put(
         `http://localhost:5000/api/mapTemplate/updateTemplate/${selectedMapDetail._id}`,
         updatedDetails
       );
 
-      message.success("Map detail updated successfully");
-      const updatedMapDetails = mapDetails.map((detail) =>
-        detail._id === selectedMapDetail._id
-          ? { ...detail, ...updatedDetails }
-          : detail
-      );
-      setMapDetails(updatedMapDetails);
-      setUpdateOpen(false);
-      setSelectedMapDetail(null);
+      if (response.data) {
+        message.success("Map detail updated successfully");
+        const updatedMapDetails = mapDetails.map((detail) =>
+          detail._id === selectedMapDetail._id
+            ? { ...detail, ...response.data }
+            : detail
+        );
+        setMapDetails(updatedMapDetails);
+        setUpdateOpen(false);
+        setSelectedMapDetail(null);
+      } else {
+        message.error("Failed to update map detail");
+      }
     } catch (error) {
       console.error("Failed to update map detail:", error);
       message.error("Failed to update map detail");
@@ -666,7 +700,7 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
                   visible={isResultModalVisible}
                   onOk={handleResultModalOk}
                   onCancel={handleResultModalOk}
-                  >
+                >
                   {fertilizerCalculations.length > 0 && (
                     <Table
                       columns={columns}

@@ -352,7 +352,7 @@ function FertilizerList() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-start gap-[25px] items-center h-[74px] bg-white rounded-[11px] m-[15px] px-[15px]">
+      <div className="flex justify-start gap-[25px] items-center h-[74px] bg-white rounded-[11px] m-b-[10px] px-[15px]">
         <div className="w-[160px] h-[29px] text-slate-900 text-xl font-semibold font-['Poppins']">
           Fertilizer Data
         </div>
@@ -397,13 +397,18 @@ function FertilizerList() {
                 type="primary"
                 icon={<DownloadOutlined />}
                 className="ml-auto"
+                style={{ backgroundColor: "#0C6C41", borderColor: "#0C6C41",height : "40px" }} 
+
               >
                 Download PDF
               </Button>
             )
           }
         </PDFDownloadLink>
-        <Button type="primary" className="ml-auto" onClick={showAddModal}>
+        <Button type="primary" className="ml-auto" onClick={showAddModal}
+          style={{ backgroundColor: "#0C6C41", borderColor: "#0C6C41" ,height : "40px" }} 
+
+        >
           Add New Fertilizer
         </Button>
       </div>
