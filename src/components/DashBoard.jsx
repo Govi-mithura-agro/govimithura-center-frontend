@@ -149,7 +149,7 @@ function DashBoard() {
         const farmers = response.data;
 
         // Calculate counts for Active and Unverified farmers
-        const activeCount = farmers.filter(farmer => farmer.status === "Active").length;
+        const activeCount = farmers.filter(farmer => farmer.status === "Verified").length;
         const unverifiedCount = farmers.filter(farmer => farmer.status === "Unverified").length;
 
         setFarmersStatusCount({ active: activeCount, unverified: unverifiedCount });
@@ -247,7 +247,7 @@ function DashBoard() {
         <div className="w-[645px] h-[345px] bg-white rounded-[11px] flex flex-col ">
           <div className="w-[272px] h-[74px] mb-4 p-4">
             <div className="w-[200px] h-[22px] text-gray-900 text-xl font-medium font-['DM Sans'] leading-normal">
-              Anuradhapura
+              {district}
             </div>
             <div className="text-[#a3aed0] text-sm font-medium font-['DM Sans'] leading-normal mt-2">
               Mass percentage of fertilizer
@@ -286,7 +286,7 @@ function DashBoard() {
     options={options}
   />
   <div className="flex flex-col ml-6 mt-10">
-    {['Active', 'Unverified'].map((label, index) => (
+    {['Verified', 'Unverified'].map((label, index) => (
       <div key={index} className="flex items-center mb-2">
         <div
           className="legend-color mt-6"
