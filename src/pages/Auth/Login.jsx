@@ -15,9 +15,9 @@ const Login = () => {
     const handleLogin = async () => {
         try {
             setLoading(true);
-            
+
             const user = { email, password };
-            
+
             const response = await axios.post("http://localhost:5000/api/managers/login", user);
             setLoading(false);
 
@@ -66,10 +66,10 @@ const Login = () => {
                     },
                 }}
             >
-                <h4 className="text-xl font-bold mt-4">Hi, Welcome back!</h4>
+                <h4 className="mt-4 text-xl font-bold">Hi, Welcome back!</h4>
                 <p className="text-gray-600">Enter your credentials to continue</p>
                 <Form
-                    className="mt-4 w-full"
+                    className="w-full mt-4"
                     name="normal_login"
                     initialValues={{ remember: true }}
                     onFinish={onFinish}
@@ -104,12 +104,12 @@ const Login = () => {
                         />
                     </Form.Item>
 
-                    <Form.Item className="flex justify-between items-center">
+                    <Form.Item className="flex items-center justify-between">
                         <Form.Item name="remember" valuePropName="checked" noStyle>
                             <Checkbox>Remember me</Checkbox>
                         </Form.Item>
 
-                        <a className="text-blue-500 hover:text-blue-700" href="/ForgetPassword">
+                        <a className="text-blue-500 hover:text-blue-700" href="/#">
                             Forgot password
                         </a>
                     </Form.Item>
@@ -118,7 +118,7 @@ const Login = () => {
                         <Button
                             type="primary"
                             htmlType="submit"
-                            className="w-full bg-[#99707E] hover:bg-[#fef6ff] active:bg-[#eeeeee] focus:outline-none focus:ring-2 focus:ring-[#c8dafc]"
+                            className="w-full bg-[#0c6c41] hover:bg-[#fef6ff] active:bg-[#eeeeee] focus:outline-none focus:ring-2 focus:ring-[#c8dafc]"
                             loading={loading}
                             size="large"
                             onClick={handleLogin}
@@ -127,7 +127,7 @@ const Login = () => {
                         </Button>
                         <div className="mt-3 text-center">
                             Don't have an Account{" "}
-                            <a className="text-blue-500 hover:text-blue-700" href="/signup">
+                            <a className="text-blue-500 hover:text-blue-700" href="/#">
                                 Sign up!
                             </a>
                         </div>
