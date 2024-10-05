@@ -333,23 +333,28 @@ function CropData() {
       console.log(response.data);
       addSuccess();
       setOpenAddCrop(false);
-      setCrop('');
-      setCropName('');
-      setScientificName('');
-      setPlantingSeason('');
-      setSoilType('');
-      setGrowthDuration('');
-      setAverageYield('');
-      setWaterRequirements('');
-      setRegion([]);
-      setDescription('');
-
-      // Reload the crops data after adding a new crop
-
+      resetForm();
     } catch (error) {
       console.log(error);
-      addError();
+      if (error.response && error.response.status === 400 && error.response.data.message.includes("scientific name already exists")) {
+        messageApi.error('A crop with this scientific name already exists. Please use a different scientific name.');
+      } else {
+        addError();
+      }
     }
+  }
+
+  function resetForm() {
+    setCrop('');
+    setCropName('');
+    setScientificName('');
+    setPlantingSeason('');
+    setSoilType('');
+    setGrowthDuration('');
+    setAverageYield('');
+    setWaterRequirements('');
+    setRegion([]);
+    setDescription('');
   }
 
   const showModal = (crop) => {
