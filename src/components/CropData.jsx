@@ -214,7 +214,6 @@ function CropData() {
   };
 
   const handleUpdateCrop = async () => {
-
     try {
       // Validate and get the form values
       const values = await updateForm.validateFields();
@@ -257,10 +256,14 @@ function CropData() {
       setUpdateOpen(false);
     } catch (error) {
       console.error(error);
-      messageApi.error('Failed to update crop. Please try again.');
+      if (error.response && error.response.status === 400 && error.response.data.message.includes("scientific name already exists")) {
+        messageApi.error('Another crop with this scientific name already exists. Please use a different scientific name.');
+      } else {
+        messageApi.error('Failed to update crop. Please try again.');
+      }
     }
   };
-
+  
 
   const updateOnClose = () => {
     setUpdateOpen(false);
@@ -333,23 +336,28 @@ function CropData() {
       console.log(response.data);
       addSuccess();
       setOpenAddCrop(false);
-      setCrop('');
-      setCropName('');
-      setScientificName('');
-      setPlantingSeason('');
-      setSoilType('');
-      setGrowthDuration('');
-      setAverageYield('');
-      setWaterRequirements('');
-      setRegion([]);
-      setDescription('');
-
-      // Reload the crops data after adding a new crop
-
+      resetForm();
     } catch (error) {
       console.log(error);
-      addError();
+      if (error.response && error.response.status === 400 && error.response.data.message.includes("scientific name already exists")) {
+        messageApi.error('A crop with this scientific name already exists. Please use a different scientific name.');
+      } else {
+        addError();
+      }
     }
+  }
+
+  function resetForm() {
+    setCrop('');
+    setCropName('');
+    setScientificName('');
+    setPlantingSeason('');
+    setSoilType('');
+    setGrowthDuration('');
+    setAverageYield('');
+    setWaterRequirements('');
+    setRegion([]);
+    setDescription('');
   }
 
   const showModal = (crop) => {
