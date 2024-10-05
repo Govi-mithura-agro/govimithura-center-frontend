@@ -53,7 +53,7 @@ const Login = () => {
     };
 
     return (
-        <div className="max-w-md h-[530px] mx-auto mt-24 mb-24 p-5 border border-gray-300 rounded-md bg-white shadow-md">
+        <div className="max-w-md h-[430px] mx-auto mt-24 mb-24 p-5 border border-gray-300 rounded-md bg-white shadow-md">
             <ConfigProvider
                 theme={{
                     components: {
