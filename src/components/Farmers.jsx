@@ -17,10 +17,11 @@ import {
   Avatar,
   Tag,
   Table,
+  Select,
 } from "antd";
 
 import axios from "axios";
-import { set } from "mongoose";
+
 
 let index = 0;
 
@@ -63,6 +64,8 @@ function FarmersList() {
   const [editUsername, setEditUsername] = useState("");
   const [editProfileImage, setEditProfileImage] = useState("");
   const [editStatus, setEditStatus] = useState("");
+  const [userDistrict, setUserDistrict] = useState("");
+  
 
   const [fileListEdit, setFileListEdit] = useState([]);
 
@@ -100,6 +103,8 @@ function FarmersList() {
         message.error("Error uploading image: " + error.message);
       });
   };
+
+  
 
   const saveEditEmployee = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -247,6 +252,10 @@ function FarmersList() {
     },
   ];
 
+  
+
+
+
   const showModal = (record) => {
     setTableModelContent(record);
     setTableModelOpen(true);
@@ -268,19 +277,56 @@ function FarmersList() {
       },
     ]);
   };
-  async function fetchFarmersList() {
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("currentUser");
+    if (storedUser) {
+      try {
+        const currentUser = JSON.parse(storedUser);
+        console.log(currentUser);
+        if (currentUser && currentUser.address && currentUser.address.district) {
+          setUserDistrict(currentUser.address.district); // Access district from address
+          console.log("User district found in local storage:", currentUser.address.district);
+        } else {
+          message.error("User district not found in local storage");
+        }
+      } catch (error) {
+        console.error("Error parsing user data from local storage", error);
+        message.error("Invalid user data found in local storage");
+      }
+    } else {
+      message.error("No user found in local storage");
+    }
+  }, []);
+
+  // Fetch farmers list once user district is available
+  useEffect(() => {
+    if (userDistrict) {
+      fetchFarmersList(userDistrict);
+    }
+  }, [userDistrict]);
+
+  const fetchFarmersList = async (district) => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/farmers/getAllFarmers"
-      );
-      setEmployeeList(response.data);
-      console.log(response.data.farmers);
-      setIsEmployeeLoading(false);
+      const response = await axios.get(`http://localhost:5000/api/farmers/getAllFarmersByDistrict`, {
+        params: { district }, // Send district as query param
+      });
+
+      if (response.data && Array.isArray(response.data)) {
+        // Store the farmers list in state
+        setEmployeeList(response.data);
+        console.log("Farmers data received:", response.data);
+      } else {
+        console.error("No farmers data received or invalid data format");
+        message.error("No farmers found in the specified district");
+      }
     } catch (error) {
       console.error("Error fetching farmers list:", error);
-      setIsEmployeeLoading(false);
     }
-  }
+  };
+  
+
+  
 
   const saveFarmer = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -290,7 +336,6 @@ function FarmersList() {
       !address.addressLine ||
       !address.province ||
       !address.district ||
-      !address.division ||
       !dob ||
       !fullName ||
       !idNumber ||
@@ -312,6 +357,10 @@ function FarmersList() {
       console.log("Profile image already set:", profileImage);
     }
 
+    if (!dob || !dob.isValid()) {
+      return message.error("Please select a valid date of birth");
+    }
+
     // Prepare the data to be sent
     const farmerData = {
       profileImage,
@@ -324,7 +373,6 @@ function FarmersList() {
         addressLine: address.addressLine,
         province: address.province,
         district: address.district,
-        division: address.division,
       },
       dob,
       status: "Unverified",
@@ -346,7 +394,6 @@ function FarmersList() {
         addressLine: "",
         province: "",
         district: "",
-        division: "",
       });
       setDob(null);
       setFullName("");
@@ -724,6 +771,7 @@ function FarmersList() {
                 className="w-[265px] h-[40px]"
               />
             </div>
+            
             <div class="ml-auto flex items-center">
               <Radio.Group
                 value={selectedType}
@@ -737,7 +785,7 @@ function FarmersList() {
               >
                 <Radio.Button value="all">All</Radio.Button>
                 <Radio.Button value="Active">Verified</Radio.Button>
-                <Radio.Button value="Suspended">Unverified</Radio.Button>
+                <Radio.Button value="Unverified">Unverified</Radio.Button>
               </Radio.Group>
               <button
                 class=" flex flex-derectiom-col text-white font-medium text-sm bg-[#533c56] rounded-md py-2.5 px-4"
@@ -890,8 +938,8 @@ function FarmersList() {
                     <span class="mb-[3px] text-xs">Date of Birth</span>
                     <DatePicker
                       class="w-[205px] h-[40px]"
-                      defaultValue={moment(dob)}
-                      onChange={(date, dateString) => setDob(dateString)}
+                      value={dob ? moment(dob) : null} // Ensure proper date rendering
+                      onChange={(date) => setDob(date)} // Set moment object directly
                     />
                   </div>
                 </div>
@@ -900,26 +948,24 @@ function FarmersList() {
               <div class="mt-4 flex flex-col gap-1.5 justify-start items-start rounded-lg border border-gray-300 p-[10px_20px_15px_20px]">
                 <span>Address Line</span>
                 <Input
-                  value={addressLine}
-                  onChange={(e) => setAddressLine(e.target.value)}
+                  value={address.addressLine}
+                  onChange={(e) =>
+                    setAddress({ ...address, addressLine: e.target.value })
+                  }
                 />
 
-                <span>Province</span>
                 <Input
-                  value={province}
-                  onChange={(e) => setProvince(e.target.value)}
+                  value={address.province}
+                  onChange={(e) =>
+                    setAddress({ ...address, province: e.target.value })
+                  }
                 />
 
-                <span>District</span>
                 <Input
-                  value={district}
-                  onChange={(e) => setDistrict(e.target.value)}
-                />
-
-                <span>Division</span>
-                <Input
-                  value={division}
-                  onChange={(e) => setDivision(e.target.value)}
+                  value={address.district}
+                  onChange={(e) =>
+                    setAddress({ ...address, district: e.target.value })
+                  }
                 />
               </div>
             </div>

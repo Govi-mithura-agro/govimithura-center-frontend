@@ -485,7 +485,7 @@ export default function PointAddingWeb() {
       message.success("Template saved successfully!");
       setIsPopupOpen(false);
       handleCancel();
-      navigate("/home");
+      navigate("/savedlands");
     } catch (error) {
       console.error("Error saving template:", error);
       message.error("Failed to save template. Please try again.");

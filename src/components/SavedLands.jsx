@@ -35,11 +35,10 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
   const [fertilizerAmount, setFertilizerAmount] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState(null);
-  const [currentDetail, setCurrentDetail] = useState(null); // To store current map detail for calculation
+  const [currentDetail, setCurrentDetail] = useState(null);
   const [fertilizers, setFertilizers] = useState([]);
   const [cropOptions, setCropOptions] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedMap, setSelectedMap] = useState(null);
   const [fertilizerCalculations, setFertilizerCalculations] = useState([]);
   const [isResultModalVisible, setIsResultModalVisible] = useState(false);
   const [canCalculate, setCanCalculate] = useState(false);
@@ -89,19 +88,14 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
       });
   };
 
-  // Fetch fertilizers when component mounts
   useEffect(() => {
     fetchFertilizers();
   }, []);
 
-  
   const handleResultModalOk = () => {
     setIsResultModalVisible(false);
-    // Clear any calculations or related data if necessary
     setFertilizerCalculations([]);
   };
-
-
 
   const handleNextStep = () => {
     form
@@ -124,12 +118,17 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
     }
   };
 
+  const showDeleteConfirm = (detail) => {
+    console.log("Deleting detail:", detail);  // Add this line to debug
+    setMapDetailToDelete(detail);
+    setDeleteModalVisible(true);
+  };
+  
+
   const isStepValid = (step) => {
     const fields =
       step === 0 ? ["cropType", "soilType"] : ["landSize", "expectedYield"];
-    return form
-      .getFieldsError(fields)
-      .every(({ errors }) => errors.length === 0);
+    return form.getFieldsError(fields).every(({ errors }) => errors.length === 0);
   };
 
   const updateOnClose = () => {
@@ -138,9 +137,9 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
   };
 
   const handleCalculate = (detail) => {
-    setCurrentDetail(detail); // Store the selected map detail for use in the form
-    form.setFieldsValue({ landSize: detail.area }); // Set land size for calculation based on the selected map
-    setIsModalVisible(true); // Show modal
+    setCurrentDetail(detail);
+    form.setFieldsValue({ landSize: detail.area });
+    setIsModalVisible(true);
   };
 
   useEffect(() => {
@@ -150,7 +149,7 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
       setFertilizerCalculations([...fertilizerCalculations]);
       setCanCalculate(false);
     }
-  }, [fertilizerCalculations, currentStep]);
+  }, [isModalVisible]);
 
   useEffect(() => {
     if (fertilizerCalculations.length > 0) {
@@ -158,20 +157,19 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
     }
   }, [fertilizerCalculations]);
 
-  // Function to fetch fertilizer  based on crops
+  const fetchCropData = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/crops/getcropdata"
+      );
+      const crops = response.data.crops;
+      setCropOptions(crops);
+    } catch (error) {
+      console.error("Failed to fetch crop data:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchCropData = async () => {
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/api/crops/getcropdata"
-        );
-        // Store the entire crop objects, not just names
-        const crops = response.data.crops;
-        setCropOptions(crops); // Store full crop data (with cropName and averageYield)
-      } catch (error) {
-        console.error("Failed to fetch crop data:", error);
-      }
-    };
     fetchCropData();
   }, []);
 
@@ -259,9 +257,41 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
       });
   };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalVisible(false);
+    setMapDetailToDelete(null);
+    };
+
+    const handleDeleteConfirm = async () => {
+      try {
+        setDeleteModalVisible(false);
+        setLoading(true);
+        console.log("Sending DELETE request to:", mapDetailToDelete._id);  // Log ID
+        
+        const response = await axios.delete(
+          `http://localhost:5000/api/mapTemplate/deleteMapDetail/${mapDetailToDelete._id}`
+        );
+        
+        console.log("Delete response:", response);  // Log response to check success
+        message.success("Map detail deleted successfully");
+    
+        // Update the UI after successful deletion
+        const updatedMapDetails = mapDetails.filter(
+          (detail) => detail._id !== mapDetailToDelete._id
+        );
+        setMapDetails(updatedMapDetails);
+    
+      } catch (error) {
+        console.error("Failed to delete map detail:", error.response || error);
+        message.error("Failed to delete map detail");
+      } finally {
+        setLoading(false);
+        setMapDetailToDelete(null);
+      }
+    };
+    
+  
 
   const handleUpdateCancel = () => {
     setUpdateOpen(false);
@@ -270,72 +300,46 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
 
   const getAllMapDetails = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         "http://localhost:5000/api/mapTemplate/getAllMapDetails"
       );
       setMapDetails(response.data);
-      setLoading(false);
     } catch (error) {
       console.error("Failed to fetch map details:", error);
       message.error("Failed to fetch map details");
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleMapChange = async (mapId) => {
+  const handleUpdateClick = async (mapDetail) => {
     try {
-      setSelectedMap(mapId);
       const response = await axios.get(
-        `http://localhost:5000/api/mapTemplate/getMapDetails/${mapId}`
+        `http://localhost:5000/api/mapTemplate/getMapDetails/${mapDetail._id}`
       );
-
-      if (response.data && response.data.area) {
-        form.setFieldsValue({ landSize: response.data.area }); // Set landSize to area
-      } else {
-        message.error("Map details not found");
-      }
+      setSelectedMapDetail(response.data);
+      form.setFieldsValue({
+        templateName: response.data.templateName,
+        area: response.data.area,
+        perimeter: response.data.perimeter,
+        location: response.data.location,
+        date: new Date(response.data.date).toISOString().split("T")[0],
+        imageUrl: response.data.imageUrl,
+        description: response.data.description,
+        landType: response.data.landType,
+      });
+      setUpdateOpen(true);
     } catch (error) {
       console.error("Failed to fetch map details by id:", error);
       message.error("Failed to fetch map details by id");
     }
   };
 
-  const showDeleteConfirm = (mapDetail) => {
-    setMapDetailToDelete(mapDetail);
-    setDeleteModalVisible(true);
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
-
-  const handleDeleteConfirm = () => {
-    if (mapDetailToDelete) {
-      axios
-        .delete(
-          `http://localhost:5000/api/mapTemplate/deleteMapDetail/${mapDetailToDelete._id}`
-        )
-        .then(() => {
-          message.success("Map detail deleted successfully");
-          setMapDetails(
-            mapDetails.filter((detail) => detail._id !== mapDetailToDelete._id)
-          );
-          setDeleteModalVisible(false);
-          setMapDetailToDelete(null);
-        })
-        .catch((error) => {
-          console.error("Failed to delete map detail:", error);
-          message.error("Failed to delete map detail");
-        });
-    }
-  };
-
-  const handleDeleteCancel = () => {
-    setDeleteModalVisible(false);
-    setMapDetailToDelete(null);
-  };
-
-  const handleUpdateClick = (mapDetail) => {
-    setSelectedMapDetail(mapDetail);
-    form.setFieldsValue(mapDetail);
-    setUpdateOpen(true);
-  };
+  
 
   const handleUpdateOk = async () => {
     try {
@@ -375,6 +379,7 @@ const SavedTemplatesWeb = ({ onBackToSidebar, onCalculate, landSize }) => {
   const filteredMapDetails = mapDetails.filter((detail) =>
     detail.templateName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
 
   return (
     <>
