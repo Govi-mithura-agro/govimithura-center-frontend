@@ -240,8 +240,9 @@ function FertilizerList() {
       .validateFields()
       .then((values) => {
         const {
+          warehouseID,
           imageUrl,
-          name,
+          name, // Use the correct field
           soilType,
           fertilizerAmount,
           waterRequirements,
@@ -250,13 +251,14 @@ function FertilizerList() {
         } = values;
 
         axios
-          .post("http://localhost:5000/api/fertilizers/addfertilizer", {
+          .post("http://localhost:5000/api/fertilizers/addFertilizer", {
+            warehouseID,
             imageUrl,
-            name,
+            name, // Send the correct field
             soilType,
-            fertilizerAmount: parseFloat(fertilizerAmount), // Convert to number
+            fertilizerAmount: parseFloat(fertilizerAmount),
             waterRequirements,
-            crops: crops.split(",").map((crop) => crop.trim()), // Convert to array if needed
+            crops: crops.split(",").map((crop) => crop.trim()),
             description,
           })
           .then(() => {
@@ -274,6 +276,8 @@ function FertilizerList() {
         console.log("Validate Failed:", info);
       });
   };
+
+
 
   const handleAddCancel = () => {
     setIsAdding(false);
