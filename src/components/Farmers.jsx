@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Icon } from "@iconify/react";
-//import Loader from "./Loader";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import {
@@ -19,7 +18,6 @@ import {
   Table,
   Select,
 } from "antd";
-
 import axios from "axios";
 
 
@@ -68,6 +66,41 @@ function FarmersList() {
   
 
   const [fileListEdit, setFileListEdit] = useState([]);
+
+  const exportToCSV = () => {
+    // Function to convert farmers data to CSV format
+    const convertToCSV = (data) => {
+      const headers = ["ID", "Full Name", "Id Number", "Address", "Phone Number", "Status"];
+      const rows = data.map(farmer => [
+        farmer.farmerID,
+        farmer.fullname,
+        farmer.idnumber,
+        `${farmer.address.addressLine}, ${farmer.address.province}, ${farmer.address.district}`,
+        farmer.phoneNumber,
+        farmer.status
+      ]);
+      return [headers, ...rows].map(row => row.join(',')).join('\n');
+    };
+
+    // Generate CSV content
+    const csvContent = convertToCSV(filteredEmployeeList);
+
+    // Create a Blob with the CSV content
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    // Create a download link and trigger the download
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "farmers_data.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+  
 
   const customRequestEdit = ({ file, onSuccess, onError }) => {
     const formData = new FormData();
@@ -613,7 +646,7 @@ function FarmersList() {
         width={550}
       >
         <div className="p-2 mb-7">
-          <div className="flex flex-row justify-center items-center gap-5">
+          <div className="flex flex-row items-center justify-center gap-5">
             <div className="w-24 mr-7">
               <Upload
                 customRequest={customRequestEdit}
@@ -650,7 +683,7 @@ function FarmersList() {
 
           <div className="flex flex-row justify-center items-center rounded-lg border border-black/15 p-5 pt-2.5 gap-5 my-4.5 mt-5 mb-5">
             <div className="add_employee_popup_details_container_left">
-              <div className="mt-2 flex flex-col">
+              <div className="flex flex-col mt-2">
                 <span className="mb-1 text-xs">Full Name</span>
                 <Input
                   size="large"
@@ -701,7 +734,7 @@ function FarmersList() {
               <div className="flex flex-col mt-2.5">
                 <span className="mb-1 text-xs">Date of Birth</span>
                 <DatePicker
-                  className="w-52 h-10"
+                  className="h-10 w-52"
                   defaultValue={moment(editDob)}
                   onChange={(date, dateString) => setEditDob(dateString)}
                 />
@@ -722,14 +755,14 @@ function FarmersList() {
             {editStatus === "Active" ? (
               <button
                 onClick={conformSuspend}
-                className="border-none bg-none w-fit text-red-600 mt-2 ml-1"
+                className="mt-2 ml-1 text-red-600 border-none bg-none w-fit"
               >
                 Verify Farmer
               </button>
             ) : (
               <button
                 onClick={conformActive}
-                className="border-none bg-none w-fit text-green-600 mt-2 ml-1"
+                className="mt-2 ml-1 text-green-600 border-none bg-none w-fit"
               >
                 Verify Farmer
               </button>
@@ -760,10 +793,10 @@ function FarmersList() {
           },
         }}
       >
-        <div class="flex flex-col justify-start items-center bg-white w-[calc(100%-30px)] mx-4 mb-4 rounded-xl">
-          <div class="flex flex-row items-center w-full h-[80px] px-4 rounded-t-xl bg-[#f5f5f5]">
-            <div class="mr-auto flex items-center gap-10">
-              <h1 class="text-xl font-semibold">All Farmers</h1>
+        <div className="flex flex-col justify-start items-center bg-white w-[calc(100%-30px)] mx-4 mb-4 rounded-xl">
+          <div className="flex flex-row items-center w-full h-[80px] px-4 rounded-t-xl bg-[#f5f5f5]">
+            <div className="flex items-center gap-10 mr-auto">
+              <h1 className="text-xl font-semibold">All Farmers</h1>
               <Search
                 placeholder="Search"
                 size="large"
@@ -771,8 +804,8 @@ function FarmersList() {
                 className="w-[265px] h-[40px]"
               />
             </div>
-            
-            <div class="ml-auto flex items-center">
+
+            <div className="flex items-center gap-4 ml-auto">
               <Radio.Group
                 value={selectedType}
                 onChange={(e) => {
@@ -787,20 +820,30 @@ function FarmersList() {
                 <Radio.Button value="Active">Verified</Radio.Button>
                 <Radio.Button value="Unverified">Unverified</Radio.Button>
               </Radio.Group>
+
+              {/* New Export to CSV button */}
               <button
-                class=" flex flex-derectiom-col text-white font-medium text-sm bg-[#533c56] rounded-md py-2.5 px-4"
+                className="flex flex-row items-center text-white font-medium text-sm bg-[#4CAF50] rounded-md py-2.5 px-4"
+                onClick={exportToCSV}
+              >
+                <Icon icon="mdi:file-export" className="w-5 h-5 mr-2" />
+                Export CSV
+              </button>
+
+              <button
+                className="flex flex-row items-center text-white font-medium text-sm bg-[#533c56] rounded-md py-2.5 px-4"
                 onClick={() => setAddEmployeeModelOpen(true)}
               >
                 <svg
-                  class="w-5 h-5"
+                  className="w-5 h-5 mr-2"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                   ></path>
                 </svg>
@@ -808,7 +851,6 @@ function FarmersList() {
               </button>
             </div>
           </div>
-
           <Modal
             centered
             open={addEmployeeModelOpen}
