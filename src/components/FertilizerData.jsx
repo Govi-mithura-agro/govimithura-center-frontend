@@ -240,7 +240,6 @@ function FertilizerList() {
       .validateFields()
       .then((values) => {
         const {
-          warehouseID,
           imageUrl,
           name, // Use the correct field
           soilType,
@@ -252,7 +251,6 @@ function FertilizerList() {
 
         axios
           .post("http://localhost:5000/api/fertilizers/addFertilizer", {
-            warehouseID,
             imageUrl,
             name, // Send the correct field
             soilType,

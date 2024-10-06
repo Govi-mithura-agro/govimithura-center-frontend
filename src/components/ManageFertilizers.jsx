@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Icon } from '@iconify/react';
-import { Space, Table,  Button, Modal, Input, Tag,Menu,Dropdown,message,Popconfirm } from 'antd';
+import { Space, Table, Button, Modal, Input, Tag, Menu, Dropdown, message, Popconfirm } from 'antd';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
@@ -26,7 +26,7 @@ function ManageFertilizers() {
 
         // Find the warehouse that matches the user's district
         const matchingWarehouse = warehouses.find(warehouse => warehouse.district === user?.address?.district);
-        
+
         // If a matching warehouse is found, assign its ID to warehouseID
         if (matchingWarehouse) {
           setWarehouseID(matchingWarehouse._id); // Assuming _id is the ID field for the warehouse
@@ -65,7 +65,7 @@ function ManageFertilizers() {
   const showuLoading = () => {
     setuOpen(true);
     setuLoading(true);
-    
+
     setTimeout(() => {
       setuLoading(false);
     }, 500);
@@ -76,8 +76,8 @@ function ManageFertilizers() {
     showuLoading();
     setselectedFertilizerId(id)
     try {
-      const response = await axios.post(`http://localhost:5000/api/fertilizers/getFertilizer/${id}`);
-      setuFertilizerName(response.data.fertilizer.fertilizerName);
+      const response = await axios.post("http://localhost:5000/api/fertilizers/getFertilizer/${id}");
+        setuFertilizerName(response.data.fertilizer.fertilizerName);
       setuQuantity(response.data.fertilizer.quantity);
     } catch (error) {
       console.log(error);
@@ -92,21 +92,21 @@ function ManageFertilizers() {
     const currentDate = today.toISOString().split('T')[0]; // Extract the date part only
 
     const updateData = {
-       quantity: uquantity,
-       date : currentDate,
-     };
+      quantity: uquantity,
+      date: currentDate,
+    };
     try {
       const response = await axios.put(`http://localhost:5000/api/fertilizers/updatefertilizer/${selectedFertilizerId}`, updateData);
-      message.success('Fertilizer quantity updated successfully!').then(() => {
-        setuOpen(false);
-        fetchData();
-      });
+        message.success('Fertilizer quantity updated successfully!').then(() => {
+          setuOpen(false);
+          fetchData();
+        });
     } catch (error) {
       console.log(error);
     }
   }
 
-  
+
   const fetchData = async () => {
     try {
       const response = await axios.post("http://localhost:5000/api/fertilizers/getFertilizerRelaventWarehouseId", {
@@ -139,14 +139,14 @@ function ManageFertilizers() {
     const currentDate = today.toISOString().split('T')[0]; // Extract the date part only
 
     const fertilizer = {
-      warehouseID:warehouseID,
+      warehouseID: warehouseID,
       fertilizerName,
       quantity,
       date: currentDate,
     };
 
     try {
-      const result = await axios.post("http://localhost:5000/api/fertilizers/addFertilizer", fertilizer);
+      const result = await axios.post("http://localhost:5000/api/fertilizers/addFertilizers", fertilizer);
       console.log(result.data);
 
       message.success('Fertilizer added successfully!').then(() => {
@@ -162,15 +162,15 @@ function ManageFertilizers() {
   const deletewarehouse = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/api/fertilizers/delete/${id}`);
-      message.success('Fertilizer deleted successfully');
+        message.success('Fertilizer deleted successfully');
       fetchData(); // Reload data after successful deletion
     } catch (error) {
       console.log(error);
       message.error('Failed to delete fertilizer');
     }
   };
-  
-  
+
+
 
   const columns = [
     {
@@ -209,12 +209,12 @@ function ManageFertilizers() {
         }
         return (
           <Tag color={color}
-          style={{
-            fontSize: '14px',
-            padding: '4px 10px',
-            width: '110px',
-            textAlign: 'center',
-          }}>
+            style={{
+              fontSize: '14px',
+              padding: '4px 10px',
+              width: '110px',
+              textAlign: 'center',
+            }}>
             {status.toUpperCase()}
           </Tag>
         );
@@ -225,8 +225,8 @@ function ManageFertilizers() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle" className="flex justify-center">
-          <button onClick={() => showUpdateModal(record._id)}  className="ml-4">
-            <Icon icon="lucide:edit" className="text-green-500 text-2xl" />
+          <button onClick={() => showUpdateModal(record._id)} className="ml-4">
+            <Icon icon="lucide:edit" className="text-2xl text-green-500" />
           </button>
           <Popconfirm
             title="Delete the fertilizer"
@@ -236,7 +236,7 @@ function ManageFertilizers() {
             onConfirm={() => deletewarehouse(record._id)} // Correctly pass the _id
           >
             <button className="ml-4">
-              <Icon icon="streamline:recycle-bin-2" className="text-red-500 text-2xl" />
+              <Icon icon="streamline:recycle-bin-2" className="text-2xl text-red-500" />
             </button>
           </Popconfirm>
         </Space>
@@ -295,37 +295,37 @@ function ManageFertilizers() {
 
   return (
     <div >
-   <div className='flex mt'></div>
-     
-   <Bar data={barData} options={barOptions} />
-      
+      <div className='flex mt'></div>
+
+      <Bar data={barData} options={barOptions} />
+
       <div className=" h-[66px] p-4 bg-white rounded-tl-lg rounded-tr-lg flex flex-col justify-center items-start gap-[721px] mt-5 mr-4 ml-3">
-      <div className="w-full h-[50px] relative">
-        <div className="absolute left-0 top-[28px] w-[416.21px] text-zinc-500/80 text-[13px] font-normal font-['Plus Jakarta Sans'] leading-snug">
-          Lorem ipsum dolor sit amet, consectetur adipis.
-        </div>
-        <div className="absolute left-0 top-0 w-[141.60px] text-zinc-900/80 text-base font-bold font-['Plus Jakarta Sans'] leading-normal">
-          Recent Pending
-        </div>
-        <div className="absolute right-0 top-0 w-[190.23px] h-[30px] p-4 bg-white rounded-[5px] flex justify-center  items-center mr-[10px]">
-          <div className="w-[126px] flex justify-center ml-10 items-center gap-[5px]">
-          <div className="w-[90px] h-[35px] bg-[#0c6c41] rounded flex justify-center items-center">
-          <button onClick={showLoading} className="text-white  text-sm font-normal font-['Lexend'] p-1">
-           Add Fertilizer
-          </button>
-        </div>
-            <div className="w-3.5 h-3.5 flex justify-end items-center">
-              <div className="w-[11px] h-[11px] relative">
-                {/* Placeholder for icon or additional content */}
+        <div className="w-full h-[50px] relative">
+          <div className="absolute left-0 top-[28px] w-[416.21px] text-zinc-500/80 text-[13px] font-normal font-['Plus Jakarta Sans'] leading-snug">
+            Lorem ipsum dolor sit amet, consectetur adipis.
+          </div>
+          <div className="absolute left-0 top-0 w-[141.60px] text-zinc-900/80 text-base font-bold font-['Plus Jakarta Sans'] leading-normal">
+            Recent Pending
+          </div>
+          <div className="absolute right-0 top-0 w-[190.23px] h-[30px] p-4 bg-white rounded-[5px] flex justify-center  items-center mr-[10px]">
+            <div className="w-[126px] flex justify-center ml-10 items-center gap-[5px]">
+              <div className="w-[90px] h-[35px] bg-[#0c6c41] rounded flex justify-center items-center">
+                <button onClick={showLoading} className="text-white  text-sm font-normal font-['Lexend'] p-1">
+                  Add Fertilizer
+                </button>
+              </div>
+              <div className="w-3.5 h-3.5 flex justify-end items-center">
+                <div className="w-[11px] h-[11px] relative">
+                  {/* Placeholder for icon or additional content */}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
 
-    <Modal
+      <Modal
         title={<p>Add  Fertilizer</p>}
         footer={
           null
@@ -335,48 +335,44 @@ function ManageFertilizers() {
         onCancel={() => setOpen(false)}
       >
         <form onSubmit={addfertilizer} className="max-w-md mx-auto">
-       <div className="relative z-0 w-full mb-5 group mt-6">
-              <input
-                type="text"
-                value={fertilizerName}
-                onChange={(e) => setFertilizerName(e.target.value)}
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder=""
-                required
-              />
-              <label className="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-0 peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Fertilizer Name</label>
-            </div>
-            <div className="relative z-0 w-full mb-5 group mt-6">
-      <input
-        type="number"
-        value={quantity}
-        onChange={handleQuantityChange}
-        className={`block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 ${
-          error ? 'border-red-600' : 'border-gray-300'
-        } appearance-none focus:outline-none focus:ring-0 ${
-          error ? 'focus:border-red-600' : 'focus:border-blue-600'
-        } peer`}
-        placeholder=""
-        required
-      />
-      <label
-        className={`absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-0 ${
-          error ? 'text-red-600' : 'text-gray-500'
-        } peer-focus:left-0 ${
-          error ? 'peer-focus:text-red-600' : 'peer-focus:text-blue-600'
-        } peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
-      >
-        Quantity (Kg)
-      </label>
-      {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
-    </div>
-            <button
-              type="submit"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+          <div className="relative z-0 w-full mt-6 mb-5 group">
+            <input
+              type="text"
+              value={fertilizerName}
+              onChange={(e) => setFertilizerName(e.target.value)}
+              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=""
+              required
+            />
+            <label className="absolute text-sm text-gray-500 duration-300 transform scale-75 -translate-y-6 top-3 -z-10 origin-0 peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Fertilizer Name</label>
+          </div>
+          <div className="relative z-0 w-full mt-6 mb-5 group">
+            <input
+              type="number"
+              value={quantity}
+              onChange={handleQuantityChange}
+              className={`block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 ${error ? 'border-red-600' : 'border-gray-300'
+                } appearance-none focus:outline-none focus:ring-0 ${error ? 'focus:border-red-600' : 'focus:border-blue-600'
+                } peer`}
+              placeholder=""
+              required
+            />
+            <label
+              className={`absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-0 ${error ? 'text-red-600' : 'text-gray-500'
+                } peer-focus:left-0 ${error ? 'peer-focus:text-red-600' : 'peer-focus:text-blue-600'
+                } peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
             >
-              Submit
-            </button>
-       </form> 
+              Quantity (Kg)
+            </label>
+            {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+          </div>
+          <button
+            type="submit"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+          >
+            Submit
+          </button>
+        </form>
       </Modal>
 
       <Modal
@@ -389,34 +385,34 @@ function ManageFertilizers() {
         onCancel={() => setuOpen(false)}
       >
         <form onSubmit={updateFertilizer} className="max-w-md mx-auto">
-        <div class="mb-5 mt-5">
-    <label for="email" class="block mb-2 text-sm font-medium text-gray-400 dark:gray-900">Fertilizer name</label>
-    <input type="text"
-                value={ufertilizerName}
-                onChange={(e) => setuFertilizerName(e.target.value)}
-                readOnly
-             class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-200  dark:placeholder-gray-400   dark:shadow-sm-light"   />
-  </div>
-  <div class="mb-5 mt-5">
-    <label for="email" class="block mb-2 text-sm font-medium text-gray-400 dark:gray-900">Update Quentity</label>
-    <input type="number"
-                value={uquantity}
-                onChange={(e) => setuQuantity(e.target.value)}
-             class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-200  dark:placeholder-gray-400   dark:shadow-sm-light"   />
-  </div>
-            <button
-              type="submit"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-            >
-              update
-            </button>
-       </form> 
+          <div class="mb-5 mt-5">
+            <label for="email" class="block mb-2 text-sm font-medium text-gray-400 dark:gray-900">Fertilizer name</label>
+            <input type="text"
+              value={ufertilizerName}
+              onChange={(e) => setuFertilizerName(e.target.value)}
+              readOnly
+              class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-200  dark:placeholder-gray-400   dark:shadow-sm-light" />
+          </div>
+          <div class="mb-5 mt-5">
+            <label for="email" class="block mb-2 text-sm font-medium text-gray-400 dark:gray-900">Update Quentity</label>
+            <input type="number"
+              value={uquantity}
+              onChange={(e) => setuQuantity(e.target.value)}
+              class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-200  dark:placeholder-gray-400   dark:shadow-sm-light" />
+          </div>
+          <button
+            type="submit"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+          >
+            update
+          </button>
+        </form>
       </Modal>
 
-    <div className="mt-5 mr-3 ml-4">
-    <Table columns={columns} dataSource={fertilizers} pagination={false} />
-    </div>
-    <br></br>
+      <div className="mt-5 ml-4 mr-3">
+        <Table columns={columns} dataSource={fertilizers} pagination={false} />
+      </div>
+      <br></br>
     </div>
   );
 }
